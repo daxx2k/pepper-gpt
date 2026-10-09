@@ -22,7 +22,7 @@ public final class LanguageRules {
         // Feature cues accept intervening articles/adjectives; generators keep the raw Italian prompt.
         String translated = request(value, "(?:spegni|spegnere|ferma|fermare|interrompi|interrompere|stoppa|disattiva|disattivare|chiudi|chiudere)", "(?:radio|musica)", "stop radio");
         if (translated != null) return translated;
-        translated = request(value, "(?:metti|mettimi|mettere|accendi|accendere|avvia|avviare|riproduci|riprodurre|fammi ascoltare|fai partire|vorrei ascoltare|voglio ascoltare|ascoltiamo)", "(?:radio|musica|pop|synthwave|nightride)", "play radio", true);
+        translated = request(value, "(?:metti|mettimi|mettere|accendi|accendere|avvia|avviare|riproduci|riprodurre|(?:fammi|fai|farmi) (?:ascoltare|sentire)|fai partire|(?:vorrei|voglio) (?:ascoltare|sentire)|ascoltiamo)", "(?:radio|musica|pop|synthwave|nightride)", "play radio", true);
         if (translated != null) return translated;
         translated = request(value, "(?:(?:mi|ci) (?:dai|mostri|suggerisci|consigli)|dammi|consigliami|suggeriscimi|mostrami|vorrei|voglio|cerco|trovami|preparami|scrivimi)", "ricetta", "recipe for");
         if (translated != null) return translated.replaceFirst("recipe for\\s+(?:per|di)\\s+", "recipe for ");

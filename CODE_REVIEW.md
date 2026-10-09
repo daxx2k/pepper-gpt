@@ -48,3 +48,8 @@ The settings dialog was exercised on the Android 6 tablet: all three original mo
 ## Offline voice removal
 
 The user requested removal of the slow local voice. Its engine initializer, provider branch, selector entry, development demo and installer are removed. The shared request chunker remains for streamed OpenAI speech under a generic name. OpenAI callbacks, first-audio gesture timing, native speech, touch ownership and cancellation are retained. Private recovery copies remain outside the public repository.
+
+
+## Natural radio requests
+
+Italian radio routing also recognizes requests to make music audible (for example, asking to hear the radio) and equivalent listening phrases. Tests include these commands and negative conversational mentions of radio/music. Original player, stations, radio screen and speech/gesture helpers are unchanged. The default and pop stream endpoints returned HTTP 200 with audio/mpeg data from the robot network during diagnosis; this is not proof of audible tablet playback.
