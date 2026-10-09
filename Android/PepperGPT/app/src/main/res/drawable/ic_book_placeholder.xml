@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+
+    <!-- Soft panel background -->
+    <path
+        android:fillColor="#EDE8DC"
+        android:pathData="M16,16h168v168h-168z" />
+
+    <!-- Left cover -->
+    <path
+        android:fillColor="#8B5E3C"
+        android:pathData="M36,44 Q36,36 44,36 L96,36 L96,164 L44,164 Q36,164 36,156 Z" />
+
+    <!-- Right cover -->
+    <path
+        android:fillColor="#A0714F"
+        android:pathData="M104,36 L156,36 Q164,36 164,44 L164,156 Q164,164 156,164 L104,164 Z" />
+
+    <!-- Pages -->
+    <path
+        android:fillColor="#FFF8EE"
+        android:pathData="M52,48 L148,48 L148,152 L52,152 Z" />
+
+    <!-- Page lines -->
+    <path
+        android:strokeColor="#D8C9B5"
+        android:strokeWidth="2"
+        android:pathData="M64,72 L136,72 M64,88 L136,88 M64,104 L120,104 M64,120 L128,120" />
+
+    <!-- Spine -->
+    <path
+        android:fillColor="#6B4423"
+        android:pathData="M96,36 L104,36 L104,164 L96,164 Z" />
+
+    <!-- Sparkle -->
+    <path
+        android:fillColor="#F4C542"
+        android:pathData="M156,52 L158,58 L164,60 L158,62 L156,68 L154,62 L148,60 L154,58 Z" />
+    <path
+        android:fillColor="#F4C542"
+        android:pathData="M44,56 L45,60 L49,61 L45,62 L44,66 L43,62 L39,61 L43,60 Z" />
+</vector>

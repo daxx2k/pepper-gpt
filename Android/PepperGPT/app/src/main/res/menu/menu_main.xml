@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_help"
+        android:title="Help"
+        android:showAsAction="never" />
+    <item
+        android:id="@+id/action_settings"
+        android:title="Settings"
+        android:showAsAction="never" />
+    <item
+        android:id="@+id/action_clear_history"
+        android:title="Clear History"
+        android:showAsAction="never" />
+    <item
+        android:id="@+id/action_close"
+        android:title="Close"
+        android:showAsAction="never" />
+
+    <group android:id="@+id/theme_group">
+        <item
+            android:id="@+id/theme_glass"
+            android:title="Theme: Glassmorphism" />
+        <item
+            android:id="@+id/theme_dark"
+            android:title="Theme: Sleek Dark" />
+        <item
+            android:id="@+id/theme_soft"
+            android:title="Theme: Soft Friendly" />
+    </group>
+</menu>

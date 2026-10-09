@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="green">#90EE90</color>
+    <color name="blue">#03A9F4</color>
+    <color name="red">#FFC0CB</color>
+    <color name="gray">#989898</color>
+
+    <!-- Glassmorphism Theme -->
+    <color name="glass_bg">#2E3440</color>
+    <color name="glass_accent">#88C0D0</color>
+    <color name="glass_text">#ECEFF4</color>
+    <color name="glass_card">#40ECEFF4</color> <!-- Semi-transparent -->
+
+    <!-- Sleek Dark Theme -->
+    <color name="dark_bg">#121212</color>
+    <color name="dark_accent">#A3BE8C</color>
+    <color name="dark_text">#FFFFFF</color>
+    <color name="dark_card">#1E1E1E</color>
+
+    <!-- Soft Friendly Theme -->
+    <color name="soft_bg">#F0F4F8</color>
+    <color name="soft_accent">#5E81AC</color>
+    <color name="soft_text">#2E3440</color>
+    <color name="soft_card">#FFFFFF</color>
+</resources>

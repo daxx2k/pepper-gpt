@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="start"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/text_message_body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/bg_bubble_robot"
+        android:maxWidth="550dp"
+        android:padding="12dp"
+        android:text="Robot message"
+        android:textColor="#000000"
+        android:textSize="18sp" />
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="6dp">
+
+        <ImageView
+            android:id="@+id/image_message"
+            android:layout_width="500dp"
+            android:layout_height="500dp"
+            android:visibility="gone"
+            android:scaleType="centerCrop"
+            android:contentDescription="Generated image"
+            android:adjustViewBounds="true" />
+
+        <ProgressBar
+            android:id="@+id/image_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+    </FrameLayout>
+</LinearLayout>

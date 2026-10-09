@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scroll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Voice"
+            android:textStyle="bold" />
+        <Spinner
+            android:id="@+id/spinnerVoice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/btnVoiceDemo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Test Cori voice" />
+
+        <!-- OpenAI API key -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="OpenAI API Key"
+            android:textStyle="bold"
+            android:paddingBottom="6dp" />
+
+        <EditText
+            android:id="@+id/editOpenAIKey"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="sk-..."
+            android:singleLine="true"
+            android:inputType="textPassword" />
+
+        <!-- OpenWeather API key -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="OpenWeather API Key"
+            android:textStyle="bold"
+            android:paddingTop="16dp"
+            android:paddingBottom="6dp" />
+
+        <EditText
+            android:id="@+id/editWeatherKey"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="your-openweather-key"
+            android:singleLine="true"
+            android:inputType="textPassword" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp"
+            android:text="Optional Pepper SSH connection (restart app after changes)"
+            android:textStyle="bold" />
+        <EditText
+            android:id="@+id/editSshHost"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Pepper head address"
+            android:singleLine="true"
+            android:inputType="textUri" />
+        <EditText
+            android:id="@+id/editSshUser"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="SSH username"
+            android:singleLine="true"
+            android:inputType="textNoSuggestions" />
+        <EditText
+            android:id="@+id/editSshPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="SSH password"
+            android:singleLine="true"
+            android:inputType="textPassword" />
+
+        <EditText
+            android:id="@+id/editSshKnownHosts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Verified SSH known_hosts entry"
+            android:inputType="textMultiLine|textNoSuggestions" />
+
+        <!-- Default City -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Default City (for weather/time)"
+            android:textStyle="bold"
+            android:paddingTop="16dp"
+            android:paddingBottom="6dp" />
+
+        <EditText
+            android:id="@+id/editDefaultCity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="e.g. London, New York, Tokyo..."
+            android:singleLine="true"
+            android:inputType="text" />
+
+        <CheckBox
+            android:id="@+id/checkboxShowKeys"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Show keys" />
+
+
+
+        <!-- Personality Preset Picker -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Personality Preset"
+            android:textStyle="bold"
+            android:paddingTop="16dp"
+            android:paddingBottom="6dp" />
+
+        <Spinner
+            android:id="@+id/spinnerPersona"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dp" />
+
+        <!-- Personality / system prompt -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edit Pepper’s Personality (System Prompt)"
+            android:textStyle="bold"
+            android:paddingTop="16dp"
+            android:paddingBottom="6dp" />
+
+        <!-- Easier to edit: taller, padded, scrollable -->
+        <EditText
+            android:id="@+id/editPersona"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:gravity="top|start"
+            android:inputType="textMultiLine"
+            android:overScrollMode="always"
+            android:scrollbars="vertical"
+            android:hint="System prompt text for Pepper..."
+            android:padding="8dp" />
+
+        <!-- Open fullscreen editor (better UX on Android 6 too) -->
+        <Button
+            android:id="@+id/btnPersonaFullscreen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_rounded_button"
+            android:backgroundTint="#808080"
+            android:textColor="@android:color/white"
+            android:text="Open Fullscreen Editor" />
+
+        <!-- Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="16dp">
+
+            <Button
+                android:id="@+id/btnSave"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/bg_rounded_button"
+                android:backgroundTint="#00AA00"
+                android:textColor="@android:color/white"
+                android:text="Save" />
+
+            <Button
+                android:id="@+id/btnResetPersona"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_rounded_button"
+                android:backgroundTint="#666666"
+                android:textColor="@android:color/white"
+                android:text="Reset Personality" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnClearKeys"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_rounded_button"
+            android:backgroundTint="#FF4444"
+            android:textColor="@android:color/white"
+            android:text="Clear API Keys" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tip: This will revert to the app’s bundled defaults from strings.xml."
+            android:textSize="12sp"
+            android:paddingTop="8dp" />
+    </LinearLayout>
+</ScrollView>

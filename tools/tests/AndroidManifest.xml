@@ -1,0 +1,1 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.softbankrobotics.pepper.pepperGPT.validation"><uses-sdk android:minSdkVersion="23" android:targetSdkVersion="28"/><application android:label="Private PepperGPT validation"/><instrumentation android:name=".FeatureProbe" android:targetPackage="com.softbankrobotics.pepper.pepperGPT"/></manifest>

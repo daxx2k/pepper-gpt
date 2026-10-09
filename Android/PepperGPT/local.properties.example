@@ -1,0 +1,3 @@
+# Copy to local.properties and set your Android SDK location.
+# API keys and SSH credentials belong in the app Settings, not in this file.
+sdk.dir=C:/path/to/Android/Sdk

@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:padding="20dp"
+    android:background="#FAFAFA">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Header -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="How to Use PepperGPT"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:paddingBottom="16dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="PepperGPT turns Pepper into a smart, friendly conversational robot powered by AI. Here is everything you can do:"
+            android:textSize="16sp"
+            android:textColor="#555555"
+            android:paddingBottom="20dp" />
+
+        <!-- Section: Talking -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🎙️  Talking to Pepper"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:paddingBottom="8dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="1. Tap the big Start Listening button at the bottom.\n2. Speak naturally — Pepper will listen until you pause.\n3. Pepper transcribes your speech, thinks of a response, and speaks back!\n4. Tap Stop Listening to stop, or Pepper will keep listening for more."
+            android:textSize="15sp"
+            android:textColor="#555555"
+            android:lineSpacingExtra="4dp"
+            android:paddingBottom="20dp" />
+
+        <!-- Section: Weather -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🌦️  Weather and Time"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:paddingBottom="8dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ask Pepper about the weather or time:\n\n• What is the weather in Paris?\n• How hot is it in Tokyo?\n• What time is it in New York?\n• What is the weather? (uses your default city)\n\nYou can set your default city in Settings."
+            android:textSize="15sp"
+            android:textColor="#555555"
+            android:lineSpacingExtra="4dp"
+            android:paddingBottom="20dp" />
+
+        <!-- Section: Images -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🖼️  Image Generation"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:paddingBottom="8dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Paint me a beautiful landscape\n\nThe image will appear right in the conversation!"
+            android:textSize="15sp"
+            android:textColor="#555555"
+            android:lineSpacingExtra="4dp"
+            android:paddingBottom="20dp" />
+
+        <!-- Section: Immersive Mode -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📖  Immersive Stories &amp; Recipes"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:paddingBottom="8dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="When Pepper tells a story or gives a recipe:\n\n• Words highlight automatically as Pepper speaks them.\n• The text will scroll on its own to keep up with the story.\n• After it ends, the conversation resumes automatically.\n• You can click on previous activity bubbles to review them!"
+            android:textSize="15sp"
+            android:textColor="#555555"
+            android:lineSpacingExtra="4dp"
+            android:paddingBottom="20dp" />
+
+        <!-- Section: Radio -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🎵  Radio &amp; Music"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:paddingBottom="8dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pepper can play music for you!\n\n• 'Play music' or 'Play radio' (plays Synthwave)\n• 'Play pop' (plays Top 40 hits)\n• 'Play synthwave' (plays Nightride FM)\n• 'Stop music' to end playback.\n\nA music note 🎵 appears at the top when playing."
+            android:textSize="15sp"
+            android:textColor="#555555"
+            android:lineSpacingExtra="4dp"
+            android:paddingBottom="20dp" />
+
+        <!-- Section: Touch -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="✋  Touch Controls"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:paddingBottom="8dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="• Touch Pepper\'s head to stop speaking immediately.\n• Touch either hand to interrupt speech.\n• These are useful if Pepper gives a long answer!"
+            android:textSize="15sp"
+            android:textColor="#555555"
+            android:lineSpacingExtra="4dp"
+            android:paddingBottom="20dp" />
+
+        <!-- Section: Status -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🟢  Status Icons"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:paddingBottom="8dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="At the top of the screen you will see three indicators:\n\n• Wi-Fi — Green means connected to the internet.\n• AI — Green means your OpenAI key is configured.\n• Clock — Green means time services are available.\n\nIf any icon is grey or red, check your network or settings."
+            android:textSize="15sp"
+            android:textColor="#555555"
+            android:lineSpacingExtra="4dp"
+            android:paddingBottom="20dp" />
+
+        <!-- Section: Settings -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="⚙️  Settings"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:paddingBottom="8dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Open Settings from the menu (⋮) to:\n\n• Set your own OpenAI API key\n• Set your own OpenWeather API key\n• Change the default city for weather and time\n• Customize Pepper\'s personality prompt\n\nThere are no built-in API keys. Enter your own keys to enable AI and weather. Choose Pepper or Piper / Cori in Settings. Cori runs offline in English after installing its voice engine."
+            android:textSize="15sp"
+            android:textColor="#555555"
+            android:lineSpacingExtra="4dp"
+            android:paddingBottom="20dp" />
+
+        <!-- Section: Tips -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="💡  Tips"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:paddingBottom="8dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="• Speak clearly and at a normal pace.\n• Wait for a brief pause after speaking — Pepper detects silence to know you are done.\n• Pepper remembers your conversation, so you can have follow-up questions!\n• Chat history is saved and restored when you reopen the app."
+            android:textSize="15sp"
+            android:textColor="#555555"
+            android:lineSpacingExtra="4dp"
+            android:paddingBottom="24dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Made with ❤️ for Pepper"
+            android:textSize="14sp"
+            android:textColor="#999999"
+            android:gravity="center"
+            android:paddingBottom="16dp" />
+
+    </LinearLayout>
+</ScrollView>

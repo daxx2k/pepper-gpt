@@ -1,0 +1,42 @@
+# Local settings, credentials and signing material
+**/local.properties
+.env
+.env.*
+!.env.example
+*.keystore
+*.jks
+*.pem
+*.p12
+*.key
+**/.local/
+**/private-backup*/
+**/secrets/
+**/chat_history.json
+**/prefs-before-*.xml
+**/google-services.json
+# Generated builds and binary distributions
+**/build/
+**/.gradle/
+**/.cxx/
+**/.externalNativeBuild/
+*.apk
+*.aab
+*.apks
+*.dex
+*.class
+# Private/editor metadata and temporary material
+**/.idea/
+**/.cursor/
+*.iml
+**/captures/
+**/downloads/
+**/archive/
+dist/
+*.log
+*.hprof
+.DS_Store
+Thumbs.db
+# Undeployed head-synthesis experiments retained locally
+/tools/cori-head-server.py
+/tools/peppergpt-cori.service
+/tools/stable-voice/HeadCoriPlayer.java

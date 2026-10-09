@@ -1,0 +1,214 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/radioScrollRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:id="@+id/radioRoot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="24dp">
+
+        <!-- Header / Station Name -->
+        <TextView
+            android:id="@+id/stationName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Loading..."
+            android:textSize="42sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:gravity="center"
+            android:layout_marginBottom="12dp"/>
+
+        <!-- Status Subtitle -->
+        <TextView
+            android:id="@+id/statusText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Connecting..."
+            android:textSize="18sp"
+            android:textColor="#DDDDDD"
+            android:gravity="center"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- Visualizer -->
+        <com.softbankrobotics.pepper.pepperGPT.MusicVisualizerView
+            android:id="@+id/visualizerView"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- Volume Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="24dp">
+            
+            <Button
+                android:id="@+id/volDown"
+                android:layout_width="54dp"
+                android:layout_height="54dp"
+                android:text="-"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:background="@drawable/bg_rounded_button"
+                android:backgroundTint="#555555"
+                android:textColor="@android:color/white"
+                android:layout_marginEnd="16dp"/>
+                
+            <TextView
+                android:id="@+id/volLevel"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="80%"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textColor="@android:color/white"
+                android:layout_marginEnd="16dp"/>
+                
+            <Button
+                android:id="@+id/volUp"
+                android:layout_width="54dp"
+                android:layout_height="54dp"
+                android:text="+"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:background="@drawable/bg_rounded_button"
+                android:backgroundTint="#555555"
+                android:textColor="@android:color/white"/>
+        </LinearLayout>
+
+        <!-- Stations Row 1 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:paddingStart="48dp"
+            android:paddingEnd="48dp"
+            android:layout_marginBottom="12dp">
+            
+            <Button
+                android:id="@+id/btnSynth"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:text="Synth"
+                android:textSize="11sp"
+                android:background="@drawable/bg_rounded_button"
+                android:backgroundTint="#9C27B0"
+                android:textColor="@android:color/white"
+                android:layout_marginEnd="8dp"/>
+
+            <Button
+                android:id="@+id/btnPop"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:text="Pop"
+                android:textSize="11sp"
+                android:background="@drawable/bg_rounded_button"
+                android:backgroundTint="#E91E63"
+                android:textColor="@android:color/white"
+                android:layout_marginEnd="8dp"/>
+                
+            <Button
+                android:id="@+id/btnLofi"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:text="Lofi"
+                android:textSize="11sp"
+                android:background="@drawable/bg_rounded_button"
+                android:backgroundTint="#00BCD4"
+                android:textColor="@android:color/white"/>
+        </LinearLayout>
+
+        <!-- Stations Row 2 (NEW) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:paddingStart="48dp"
+            android:paddingEnd="48dp"
+            android:layout_marginBottom="32dp">
+            
+            <Button
+                android:id="@+id/btnRetro"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:text="80s"
+                android:textSize="11sp"
+                android:background="@drawable/bg_rounded_button"
+                android:backgroundTint="#FF9800"
+                android:textColor="@android:color/white"
+                android:layout_marginEnd="8dp"/>
+
+            <Button
+                android:id="@+id/btnAmbient"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:text="Chill"
+                android:textSize="11sp"
+                android:background="@drawable/bg_rounded_button"
+                android:backgroundTint="#4CAF50"
+                android:textColor="@android:color/white"
+                android:layout_marginEnd="8dp"/>
+                
+            <Button
+                android:id="@+id/btnJazz"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:text="Jazz"
+                android:textSize="11sp"
+                android:background="@drawable/bg_rounded_button"
+                android:backgroundTint="#795548"
+                android:textColor="@android:color/white"/>
+        </LinearLayout>
+
+        <!-- Bottom Row: Dance toggle + Stop -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="8dp">
+
+            <Button
+                android:id="@+id/btnDanceToggle"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:text="🕺 Dance: ON"
+                android:textAllCaps="false"
+                android:textSize="14sp"
+                android:background="@drawable/bg_rounded_button"
+                android:backgroundTint="#9C27B0"
+                android:textColor="@android:color/white"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:layout_marginEnd="16dp"/>
+
+            <Button
+                android:id="@+id/stopButton"
+                android:layout_width="200dp"
+                android:layout_height="50dp"
+                android:text="Stop Music"
+                android:background="@drawable/bg_rounded_button"
+                android:backgroundTint="#FF4444"
+                android:textColor="@android:color/white"/>
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

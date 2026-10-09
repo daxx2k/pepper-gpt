@@ -1,0 +1,61 @@
+package com.softbankrobotics.pepper.pepperGPT;
+public final class LanguageRulesTest {
+    public static void main(String[] args) {
+        assert LanguageRules.route("Eh, mi racconti una piccola storia?").contains("tell me a story");
+        assert LanguageRules.route("Pepper, mi racconti una bella storia sui robot?").contains("tell me a story");
+        assert LanguageRules.route("Puoi raccontarmi una breve storia illustrata?").contains("tell me a story");
+        assert LanguageRules.route("Vorrei una piccola favola").contains("tell me a story");
+        assert LanguageRules.route("Mi leggi una bella fiaba?").contains("tell me a story");
+        assert LanguageRules.route("La storia di questo libro è bella").equals("La storia di questo libro è bella");
+        assert LanguageRules.route("Ieri mi hai raccontato una bella storia").equals("Ieri mi hai raccontato una bella storia");
+        assert LanguageRules.route("Mi suggerisci una buona ricetta per la pasta?").contains("recipe for la pasta");
+        assert LanguageRules.route("Come si prepara il risotto?").contains("how to cook il risotto");
+        assert LanguageRules.route("Quali sono gli ingredienti della carbonara?").contains("ingredients for carbonara");
+        assert LanguageRules.route("Ho letto una ricetta interessante").equals("Ho letto una ricetta interessante");
+        assert LanguageRules.route("Mi metti un po' di musica pop?").contains("play radio pop");
+        assert LanguageRules.route("Puoi accendere la radio pop?").contains("play radio");
+        assert LanguageRules.route("Vorrei ascoltare un po' di synthwave").contains("play radio synthwave");
+        assert LanguageRules.route("Puoi fermare la musica?").contains("stop radio");
+        assert LanguageRules.route("Ho ascoltato la radio ieri").equals("Ho ascoltato la radio ieri");
+        assert LanguageRules.route("Puoi creare una bella immagine di un gatto?").contains("generate an image");
+        assert LanguageRules.route("Vorrei un piccolo disegno di Pepper").contains("generate an image");
+        assert LanguageRules.route("Disegnami un robot").contains("draw me un robot");
+        assert LanguageRules.route("Ho visto una bella immagine").equals("Ho visto una bella immagine");
+        assert LanguageRules.route("Mi fai una bella foto?").contains("take a photo");
+        assert LanguageRules.route("Puoi scattarmi una fotografia?").contains("take a photo");
+        assert LanguageRules.route("Puoi immaginarmi come un astronauta?").contains("imagine me as un astronauta");
+        assert LanguageRules.route("Come sarei se fossi un pirata?").contains("what would i look like");
+        assert LanguageRules.route("Ho scattato una foto").equals("Ho scattato una foto");
+        assert LanguageRules.route("Mi dici le previsioni del tempo per Milano oggi?").equals("weather in milano");
+        assert LanguageRules.route("Com’è il tempo a Londra, per favore?").equals("weather in london");
+        assert LanguageRules.route("Meteo Roma").equals("weather in roma");
+        assert LanguageRules.route("Che tempo fa oggi?").equals("weather today");
+        assert LanguageRules.route("Che temperatura c'è a Milano?").equals("temperature in milano");
+        assert LanguageRules.route("Quanti gradi ci sono?").trim().equals("temperature in");
+        assert LanguageRules.route("Che ore sono a Tokyo?").equals("time in tokyo");
+        assert LanguageRules.route("Che ora è?").equals("what time is it");
+        assert LanguageRules.route("Ho visto le previsioni del tempo").equals("Ho visto le previsioni del tempo");
+        assert LanguageRules.route("No, tu raccontamela.").contains("tell me a story");
+        assert LanguageRules.route("Raccontamene una, per favore").contains("tell me a story");
+        assert LanguageRules.route("Vi racconto una piccola storia").equals("Vi racconto una piccola storia");
+        assert LanguageRules.route("Raccontami una storia sui robot").equals("tell me a story sui robot");
+        assert LanguageRules.route("Dammi una ricetta per la pasta").equals("recipe for la pasta");
+        assert LanguageRules.route("Che tempo fa a Londra?").equals("weather in london");
+        assert LanguageRules.route("Una storia, per favore.").startsWith("story please");
+        assert LanguageRules.route("Pepper, puoi raccontarmi una storia sui robot?").contains("tell me a story");
+        assert LanguageRules.route("Vorrei una ricetta per la pasta").equals("recipe for la pasta");
+        assert LanguageRules.ignoreTranscription("Sottotitoli creati dalla comunità Amara.org");
+        assert !LanguageRules.ignoreTranscription("Una storia, per favore.");
+        assert LanguageRules.route("Ho letto una storia interessante").equals("Ho letto una storia interessante");
+        assert LanguageRules.route("Accendi la radio BBC").equals("play radio bbc");
+        assert LanguageRules.route("Spegni la radio").equals("stop radio");
+        assert LanguageRules.route("G genera un'immagine di un robot").contains("generate an image");
+        assert LanguageRules.route("Trasformami in un astronauta").equals("transform me into un astronauta");
+        assert LanguageRules.route("Tell me a story about Mars").equals("Tell me a story about Mars");
+        assert LanguageRules.speech("The weather in London is light rain with a temperature of 12 degrees Celsius.")
+                .equals("Il tempo a London è pioggia leggera con una temperatura di 12 gradi Celsius.");
+        assert LanguageRules.speech("Playing BBC Radio 4").equals("Sto riproducendo BBC Radio 4");
+        assert LanguageRules.speech("Una storia illustrata.").equals("Una storia illustrata.");
+        System.out.println("PASS: Italian story/recipe/weather/radio requests including the reported phrase, subtitle noise and spoken templates.");
+    }
+}
