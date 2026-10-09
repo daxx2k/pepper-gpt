@@ -2,6 +2,10 @@ package com.softbankrobotics.pepper.pepperGPT;
 public final class LanguageRulesTest {
     public static void main(String[] args) {
         assert LanguageRules.route("Ehi Peppero, mi fai sentire la radio?").contains("play radio");
+        assert LanguageRules.route("Eh, per me fa sentire la radio.").contains("play radio");
+        assert LanguageRules.route("Fa sentire la radio").contains("play radio");
+        assert LanguageRules.route("Puoi far sentire la musica?").contains("play radio");
+        assert LanguageRules.route("Facci ascoltare la radio pop").contains("play radio pop");
         assert LanguageRules.route("Pepper, mi fai ascoltare un po' di musica?").contains("play radio");
         assert LanguageRules.route("Puoi farmi sentire la radio pop?").contains("play radio pop");
         assert LanguageRules.route("Fammi sentire la radio").contains("play radio");
