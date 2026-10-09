@@ -2,9 +2,15 @@
 
 <img src="Icon/ic_launcher.png" alt="PepperGPT icon" width="140" />
 
-**Spoken AI conversation, illustrated stories and everyday activities for the SoftBank Pepper robot.**
+**Talk to a robot, ask questions, share stories and explore ideas together.**
 
-PepperGPT is an Android app for Pepper's tablet that connects her to OpenAI models. You speak to Pepper, she answers aloud with contextual gestures, and her tablet displays the conversation, pictures and activity controls. You can give her a personality, ask for an illustrated story or recipe, check the weather, or put on internet radio.
+Pepper is a human-shaped robot made by SoftBank Robotics. She has a face, moving arms and a tablet on her chest, and is designed to interact with people.
+
+PepperGPT is an app that brings conversational AI, like ChatGPT, to Pepper. Instead of typing into a chat window, you speak to her. She answers aloud, moves her arms as she speaks, and uses her tablet to show messages and pictures.
+
+You can have a conversation in English or Italian, ask her to tell an illustrated story, find a recipe, create a picture, check the weather or play internet radio. You can also choose her voice and personality, and interrupt her speech by touching her head or hand.
+
+PepperGPT uses OpenAI's AI models and adds robot interaction and these activities around the conversation. It is a community project, rather than an official ChatGPT application.
 
 The app runs on Pepper without a companion PC. AI conversation, OpenAI voices and image generation need an Internet connection and your own OpenAI API key.
 
