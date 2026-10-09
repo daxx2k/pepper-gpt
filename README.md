@@ -8,6 +8,8 @@ Android software for SoftBank Pepper, preserving voice conversation, illustrated
 
 The language switch changes recognition, conversation and voice; menus remain in English. Italian feature requests are translated only for routing, while generators receive the original request. Stories retain narrative-only output; recipes retain their required illustration marker. Cori is English-only and slow on Pepper's tablet. Optional OpenAI voices require Internet and use the configured OpenAI key; no PC is needed during normal use.
 
+The green launcher badge is an RGBA PNG with a transparent exterior, without a black tile or glow. The Android 6 launcher asset is exported at 72 pixels for hdpi.
+
 The stable toolbar provides voice-volume minus/plus controls and a percentage after the language flag. Recipe chat previews have half the original width and height and rounded corners; tapping still opens the full image.
 
 ## Build the development application
