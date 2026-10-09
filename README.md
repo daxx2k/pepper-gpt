@@ -6,7 +6,7 @@
 
 Pepper is a human-shaped robot made by SoftBank Robotics. She has a face, moving arms and a tablet on her chest, and is designed to interact with people.
 
-PepperGPT is an app that brings conversational AI, like ChatGPT, to Pepper. Instead of typing into a chat window, you speak to her. She answers aloud, moves her arms as she speaks, and uses her tablet to show messages and pictures.
+PepperGPT is an app for **Pepper 2.9 with an Android tablet** that brings conversational AI, like ChatGPT, to the robot. Instead of typing into a chat window, you speak to her. She answers aloud, moves her arms as she speaks, and uses her tablet to show messages and pictures.
 
 You can have a conversation in English or Italian, ask her to tell an illustrated story, find a recipe, create a picture, check the weather or play internet radio. You can also choose her voice and personality, and interrupt her speech by touching her head or hand.
 
@@ -51,7 +51,7 @@ The slow offline Cori engine has been removed. Native Pepper speech and OpenAI C
 
 ## Requirements and configuration
 
-Pepper's tablet runs **Android 6.0 / API 23 on 32-bit ARMv7**. The app uses Pepper's QiSDK robot connection for robot interaction.
+This project targets **Pepper 2.9 with the Android tablet**, running **Android 6.0 / API 23 on 32-bit ARMv7**. The app uses Pepper's QiSDK robot connection for robot interaction.
 
 In Settings, provide:
 
