@@ -103,10 +103,7 @@ public final class LanguageSwitch {
                             String next = index == 1 ? "it" : "en";
                             dialog.dismiss();
                             if (next.equals(language())) return;
-                            if ("it".equals(next) && "cori".equals(activity.getSharedPreferences("PepperGPT_Prefs", 0).getString("voice_mode", "pepper"))) {
-                                android.widget.Toast.makeText(activity, "Cori supports English. Select an OpenAI voice for Italian.", android.widget.Toast.LENGTH_LONG).show();
-                                return;
-                            }
+
                             LegacyVoiceAdapter.beforeLanguageChange(activity);
                             activity.getSharedPreferences("PepperGPT_Prefs", 0).edit().putString("app_language", next).apply();
                             activity.recreate();

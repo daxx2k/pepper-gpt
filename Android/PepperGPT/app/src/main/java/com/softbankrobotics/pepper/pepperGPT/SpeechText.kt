@@ -2,7 +2,7 @@ package com.softbankrobotics.pepper.pepperGPT
 
 object SpeechText {
     /** Remove Pepper-only control tags and split without losing any narration. */
-    fun coriChunks(text: String, limit: Int = 3000): List<String> {
+    fun chunks(text: String, limit: Int = 3000): List<String> {
         require(limit > 0)
         var remaining = text.replace(Regex("""\\[^\\]*\\"""), " ")
             .replace(Regex("\\s+"), " ").trim()

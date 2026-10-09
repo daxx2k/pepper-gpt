@@ -43,3 +43,8 @@ Settings exposes independent runtime model IDs for chat, creative text and image
 The stable toolbar has persistent voice-volume controls. Streamed voices use tablet media volume; native Pepper speech applies the chosen volume to utterances while the gesture-only native action remains muted. Device settings and conversation history are preserved during deployment. Recipe previews and full-image opening were checked on the tablet. A human confirmed speech/gestures and face following on the preceding build; this is not a complete physical regression of the latest build.
 
 The settings dialog was exercised on the Android 6 tablet: all three original model IDs were visible; Cancel and Save of unchanged defaults preserved complete preferences and conversation history. Deployment preserved all APK entries except the modified application DEX. Robot focus returned to the main application.
+
+
+## Offline voice removal
+
+The user requested removal of the slow local voice. Its engine initializer, provider branch, selector entry, development demo and installer are removed. The shared request chunker remains for streamed OpenAI speech under a generic name. OpenAI callbacks, first-audio gesture timing, native speech, touch ownership and cancellation are retained. Private recovery copies remain outside the public repository.

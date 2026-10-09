@@ -175,7 +175,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Open Settings from the menu (⋮) to:\n\n• Set your own OpenAI API key\n• Set your own OpenWeather API key\n• Change the default city for weather and time\n• Customize Pepper\'s personality prompt\n\nThere are no built-in API keys. Enter your own keys to enable AI and weather. Choose Pepper or Piper / Cori in Settings. Cori runs offline in English after installing its voice engine."
+            android:text="Open Settings from the menu (⋮) to:\n\n• Set your own OpenAI API key\n• Set your own OpenWeather API key\n• Change the default city for weather and time\n• Customize Pepper\'s personality prompt\n\nThere are no built-in API keys. Enter your own keys to enable AI and weather."
             android:textSize="15sp"
             android:textColor="#555555"
             android:lineSpacingExtra="4dp"

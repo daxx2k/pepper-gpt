@@ -3,9 +3,9 @@ package com.softbankrobotics.pepper.pepperGPT;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Short utterances for the tablet's slow local engine; preserve every word. */
-public final class CoriChunks {
-    private CoriChunks() { }
+/** Bounded speech requests that preserve every word. */
+public final class SpeechChunks {
+    private SpeechChunks() { }
     public static List<String> split(String text) {
         return split(text, 60, 100, true);
     }

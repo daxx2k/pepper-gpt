@@ -4,9 +4,9 @@ Android software for SoftBank Pepper, preserving voice conversation, illustrated
 
 ## Source baselines
 
-`Android/PepperGPT` is the cleaned development application (2.8.x), with runtime configuration and native Pepper/offline Piper Cori speech. `tools/stable-voice` contains the current source for the separate restored 2.7.x integration: streamed OpenAI Coral/Marin speech, touch cancellation, native speech gestures, and ENG/ITA conversation language support. These integration helpers are not wired into the development Gradle app. Building the development project does not reproduce the privately patched stable app. The integration uses `ModelSettings.java` from the development source as a shared helper. Legacy APKs are excluded because they may embed credentials.
+`Android/PepperGPT` is the cleaned development application (2.8.x), with runtime configuration and native Pepper speech. `tools/stable-voice` contains the current source for the separate restored 2.7.x integration: streamed OpenAI Coral/Marin speech, touch cancellation, native speech gestures, and ENG/ITA conversation language support. These integration helpers are not wired into the development Gradle app. Building the development project does not reproduce the privately patched stable app. The integration uses `ModelSettings.java` from the development source as a shared helper. Legacy APKs are excluded because they may embed credentials.
 
-The language switch changes recognition, conversation and voice; menus remain in English. Italian feature requests are translated only for routing, while generators receive the original request. Stories retain narrative-only output; recipes retain their required illustration marker. Cori is English-only and slow on Pepper's tablet. Optional OpenAI voices require Internet and use the configured OpenAI key; no PC is needed during normal use.
+The language switch changes recognition, conversation and voice; menus remain in English. Italian feature requests are translated only for routing, while generators receive the original request. Stories retain narrative-only output; recipes retain their required illustration marker. Optional OpenAI voices require Internet and use the configured OpenAI key; no PC is needed during normal use.
 
 The green launcher badge is an RGBA PNG with a transparent exterior, without a black tile or glow. The Android 6 launcher asset is exported at 192 pixels for hdpi.
 
@@ -26,10 +26,10 @@ Custom models must support Chat Completions (and image input for analysis), and 
 
 Enter your own OpenAI and OpenWeather keys in Settings. Optional robot SSH access requires your own connection settings and a verified SSH known_hosts entry. Credentials are runtime-only in the development source and must never be committed. Android backup is disabled.
 
-Offline Cori is a separate sherpa-onnx engine and model. Install the ARMv7 engine using `tools/Install-Cori.ps1 -Serial <tablet-address>:5555`. It replaces other model variants with the same engine package name. Upstream engine and model binaries are not redistributed here. See `THIRD_PARTY.md`.
-
 ## Validation and privacy
 
 The development build and ten unit tests passed, including independent model selection and preservation of existing default request bodies. Routing checks cover natural Italian requests for each preserved module, negative conversation cases and city/temperature/time extraction. Runtime evidence and remaining limitations are documented in `CODE_REVIEW.md`; a successful build is not proof of physical robot behavior.
 
 This is a source-only repository: no personal configuration, conversations, logs, private backups, credentials, signing keys or application APKs. See `SECURITY.md`. No new license is assigned to inherited code or animation assets.
+
+The slow Cori option and its separate TTS Engine application have been removed. The restored stable integration keeps native Pepper and OpenAI Coral/Marin voices, streaming, touch interruption and contextual speech gestures.

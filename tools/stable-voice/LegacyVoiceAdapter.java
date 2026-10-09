@@ -4,12 +4,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.media.AudioManager;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.speech.tts.TextToSpeech;
-import android.speech.tts.UtteranceProgressListener;
-import android.speech.tts.Voice;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +25,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.CancellationException;
@@ -40,7 +35,6 @@ import java.util.concurrent.atomic.AtomicLong;
 public final class LegacyVoiceAdapter {
     private static final String TAG = "LegacyVoice";
     private static final String PREFS = "PepperGPT_Prefs";
-    private static final String ENGINE = "com.k2fsa.sherpa.onnx.tts.engine";
     private static final Handler UI = new Handler(Looper.getMainLooper());
     private static final Map<SayBuilder, Info> BUILDERS = Collections.synchronizedMap(new WeakHashMap<>());
     private static final Map<Say, Info> BUILT = Collections.synchronizedMap(new WeakHashMap<>());
@@ -48,9 +42,6 @@ public final class LegacyVoiceAdapter {
     private static final Map<Activity, Future<Void>> ACTIVE = Collections.synchronizedMap(new WeakHashMap<>());
     private static final Map<Activity, Binding> TOUCH = Collections.synchronizedMap(new WeakHashMap<>());
     private static volatile WeakReference<Activity> owner = new WeakReference<>(null);
-    private static TextToSpeech tts;
-    private static boolean ready;
-    private static boolean initFailed;
     private static Task current;
     private static final AtomicLong SERIAL = new AtomicLong();
 
@@ -63,56 +54,55 @@ public final class LegacyVoiceAdapter {
         final Info info;
         final Promise<Void> promise = new Promise<>();
         final AtomicBoolean finished = new AtomicBoolean();
-        final String id = "cori-" + SERIAL.incrementAndGet();
+        final String id = "speech-" + SERIAL.incrementAndGet();
         String lastId;
         List<String> pieces;
         int nextPiece;
         boolean story;
-        boolean openai;
         OpenAiVoice.Session streamedAudio;
         Future<Void> bodyAction;
         AudioManager audio;
         int previousVolume = -1;
-        int coriVolume = -1;
+        int externalVolume = -1;
         Task(Info i) { info = i; }
         void stopBody() {
             Future<Void> action = bodyAction;
             bodyAction = null;
             if (action != null && !action.isDone()) action.requestCancellation();
         }
-        void raiseCoriVolume(Activity activity) {
+        void raiseExternalVolume(Activity activity) {
             if (previousVolume >= 0) return;
             audio = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
             if (audio == null) return;
             previousVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
             int maximum = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-            coriVolume = VoiceVolume.externalLevel(activity, previousVolume, maximum);
-            try { audio.setStreamVolume(AudioManager.STREAM_MUSIC, coriVolume, 0); }
-            catch (SecurityException e) { previousVolume = -1; Log.w(TAG, "Cori volume adjustment unavailable"); }
+            externalVolume = VoiceVolume.externalLevel(activity, previousVolume, maximum);
+            try { audio.setStreamVolume(AudioManager.STREAM_MUSIC, externalVolume, 0); }
+            catch (SecurityException e) { previousVolume = -1; Log.w(TAG, "External voice volume adjustment unavailable"); }
         }
         void restoreVolume() {
             if (audio == null || previousVolume < 0) return;
             // Preserve an independent volume adjustment made by the user during speech.
             try {
-                if (audio.getStreamVolume(AudioManager.STREAM_MUSIC) == coriVolume)
+                if (audio.getStreamVolume(AudioManager.STREAM_MUSIC) == externalVolume)
                     audio.setStreamVolume(AudioManager.STREAM_MUSIC, previousVolume, 0);
-            } catch (SecurityException e) { Log.w(TAG, "Cori volume restoration unavailable"); }
+            } catch (SecurityException e) { Log.w(TAG, "External voice volume restoration unavailable"); }
             previousVolume = -1;
         }
         void cancel() {
             if (!finished.compareAndSet(false, true)) return;
             if (streamedAudio != null) streamedAudio.cancel();
             stopBody();
-            if (current == this) { if (tts != null) tts.stop(); current = null; }
+            if (current == this) { current = null; }
             restoreVolume();
             promise.setCancelled();
-            Log.i(TAG, "Cori cancelled");
+            Log.i(TAG, "External voice cancelled");
         }
         void fail(String reason) {
             if (!finished.compareAndSet(false, true)) return;
             if (streamedAudio != null) streamedAudio.cancel();
             stopBody();
-            if (current == this) { if (tts != null) tts.stop(); current = null; }
+            if (current == this) { current = null; }
             restoreVolume();
             promise.setError(reason);
             Activity a = info.activity.get();
@@ -125,7 +115,7 @@ public final class LegacyVoiceAdapter {
             if (current == this) current = null;
             restoreVolume();
             promise.setValue(null);
-            Log.i(TAG, "Cori playback completed");
+            Log.i(TAG, "External voice playback completed");
         }
     }
 
@@ -162,25 +152,19 @@ public final class LegacyVoiceAdapter {
         Activity a = info == null ? owner.get() : info.activity.get();
         if (a != null && owner.get() != a) return Future.cancelled();
         String mode = a == null ? "pepper" : a.getSharedPreferences(PREFS, 0).getString("voice_mode", "pepper");
-        if (a == null || info == null || (!"cori".equals(mode) && !"openai".equals(mode))) {
+        if (a == null || info == null || !"openai".equals(mode)) {
             Future<Void> future = say.run();
             if (a != null) ACTIVE.put(a, future);
             return future;
         }
         Task task = new Task(info);
-        task.openai = "openai".equals(mode);
         task.promise.setOnCancel(ignored -> UI.post(task::cancel));
         ACTIVE.put(a, task.promise.getFuture());
         UI.post(() -> {
             if (task.finished.get()) return;
             if (current != null) current.cancel();
             current = task;
-            if (task.openai) play(task);
-            else {
-                initialize(a);
-                if (ready) play(task);
-                else if (initFailed) task.fail("Cori engine initialization failed");
-            }
+            play(task);
         });
         return task.promise.getFuture();
     }
@@ -190,36 +174,7 @@ public final class LegacyVoiceAdapter {
         catch (Exception e) { throw new RuntimeException("Speech interrupted or failed", e); }
     }
 
-    private static void initialize(Context context) {
-        if (tts != null) return;
-        initFailed = false;
-        Toast.makeText(context.getApplicationContext(), "Preparing Cori voice…", Toast.LENGTH_LONG).show();
-        tts = new TextToSpeech(context.getApplicationContext(), status -> UI.post(() -> {
-            ready = status == TextToSpeech.SUCCESS;
-            initFailed = !ready;
-            if (ready) {
-                tts.setLanguage(Locale.UK);
-                if (tts.getVoices() != null) for (Voice voice : tts.getVoices()) {
-                    if (voice.getName().toLowerCase(Locale.ROOT).contains("cori")) { tts.setVoice(voice); break; }
-                }
-                tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
-                    public void onStart(String id) { Log.i(TAG, "Cori synthesis started: " + id); }
-                    public void onDone(String id) { UI.post(() -> {
-                        Task t = current;
-                        if (t == null || t.finished.get() || !id.equals(t.lastId)) return;
-                        if (t.nextPiece == t.pieces.size()) t.complete();
-                        else {
-                            boolean sentenceEnd = t.pieces.get(t.nextPiece - 1).matches(".*[.!?][\\\"'”’)]*");
-                            UI.postDelayed(() -> nextChunk(t), sentenceEnd ? (t.story ? 500 : 220) : 0);
-                        }
-                    }); }
-                    public void onError(String id) { UI.post(() -> { Task t = current; if (t != null && id.startsWith(t.id + ":")) t.fail("Cori synthesis failed"); }); }
-                });
-                Log.i(TAG, "Cori engine ready");
-                if (current != null) play(current);
-            } else if (current != null) current.fail("Cori engine initialization failed");
-        }), ENGINE);
-    }
+
     private static void play(Task task) {
         if (task.finished.get() || current != task) return;
         Activity taskOwner = task.info.activity.get();
@@ -229,10 +184,9 @@ public final class LegacyVoiceAdapter {
         if (text.isEmpty()) { task.complete(); return; }
         Activity a = task.info.activity.get();
         task.story = a != null && "story".equals(a.getIntent().getStringExtra("EXTRA_MODE"));
-        if (!task.openai) tts.setSpeechRate(task.story ? .85f : 1f);
-        task.pieces = task.openai ? CoriChunks.split(text, 1600, 1600, false) : CoriChunks.split(text);
+        task.pieces = SpeechChunks.split(text, 1600, 1600, false);
         if (task.pieces.isEmpty()) { task.complete(); return; }
-        task.raiseCoriVolume(taskOwner);
+        task.raiseExternalVolume(taskOwner);
         nextChunk(task);
     }
     private static void nextChunk(Task task) {
@@ -242,18 +196,12 @@ public final class LegacyVoiceAdapter {
         int index = task.nextPiece++;
         task.lastId = task.id + ":" + index;
         String chunk = task.pieces.get(index);
-        if (task.openai) {
             task.streamedAudio = OpenAiVoice.start(a, chunk, task.story, () -> startBody(task, chunk), () -> {
                 if (task.finished.get() || current != task) return;
                 task.stopBody();
                 if (task.nextPiece == task.pieces.size()) task.complete();
                 else UI.postDelayed(() -> nextChunk(task), task.story ? 500 : 220);
             }, () -> task.fail("OpenAI voice request failed"));
-            return;
-        }
-        Log.i(TAG, "Cori queued chunk " + (index + 1) + "/" + task.pieces.size() + ": " + chunk.length() + " characters");
-        if (tts.speak(chunk, TextToSpeech.QUEUE_FLUSH, new Bundle(), task.lastId) == TextToSpeech.ERROR)
-            task.fail("Cori rejected speech request");
     }
 
     private static void startBody(Task task, String text) {
@@ -297,10 +245,7 @@ public final class LegacyVoiceAdapter {
     }
     public static void onFocusGained(Activity a, QiContext qi) {
         owner = new WeakReference<>(a);
-        if ("MainActivity".equals(a.getClass().getSimpleName()) &&
-                "cori".equals(a.getSharedPreferences(PREFS, 0).getString("voice_mode", "pepper"))) {
-            UI.post(() -> { if (owner.get() == a && !a.isFinishing()) initialize(a); });
-        }
+
         Binding previous = TOUCH.remove(a); if (previous != null) previous.close();
         Binding binding = new Binding(a, qi); TOUCH.put(a, binding);
         for (String name : new String[]{"Head/Touch", "LHand/Touch", "RHand/Touch"}) {
@@ -378,18 +323,12 @@ public final class LegacyVoiceAdapter {
             String voice = a.getSharedPreferences(PREFS, 0).getString("voice_mode", "pepper");
             String onlineVoice = a.getSharedPreferences(PREFS, 0).getString("openai_voice", "marin");
             new AlertDialog.Builder(a).setTitle("Voice")
-                    .setSingleChoiceItems(new String[]{"Pepper voice", "Piper Cori — English, offline", "OpenAI Coral — AI voice, online", "OpenAI Marin — AI voice, online"}, "openai".equals(voice) ? ("coral".equals(onlineVoice) ? 2 : 3) : ("cori".equals(voice) ? 1 : 0), (dialog, selection) -> {
-                        if (selection == 1 && LanguageSwitch.italian()) {
-                            dialog.dismiss();
-                            Toast.makeText(a, "Cori supports English. Select an OpenAI voice for Italian.", Toast.LENGTH_LONG).show();
-                            return;
-                        }
+                    .setSingleChoiceItems(new String[]{"Pepper voice", "OpenAI Coral — AI voice, online", "OpenAI Marin — AI voice, online"}, "openai".equals(voice) ? ("coral".equals(onlineVoice) ? 1 : 2) : 0, (dialog, selection) -> {
                         android.content.SharedPreferences.Editor preferences = a.getSharedPreferences(PREFS, 0).edit()
-                                .putString("voice_mode", selection >= 2 ? "openai" : (selection == 1 ? "cori" : "pepper"));
-                        if (selection >= 2) preferences.putString("openai_voice", selection == 2 ? "coral" : "marin");
+                                .putString("voice_mode", selection > 0 ? "openai" : "pepper");
+                        if (selection > 0) preferences.putString("openai_voice", selection == 1 ? "coral" : "marin");
                         preferences.apply();
                         updateVoiceLabel(a, button);
-                        if (selection == 1) initialize(a);
                         dialog.dismiss();
                     }).setNegativeButton("Cancel", null).show();
         });
@@ -398,7 +337,7 @@ public final class LegacyVoiceAdapter {
     private static void updateVoiceLabel(Activity a, Button b) {
         String voice = a.getSharedPreferences(PREFS, 0).getString("voice_mode", "pepper");
         String onlineVoice = a.getSharedPreferences(PREFS, 0).getString("openai_voice", "marin");
-        b.setText("Voice: " + ("openai".equals(voice) ? ("coral".equals(onlineVoice) ? "OpenAI Coral" : "OpenAI Marin") : ("cori".equals(voice) ? "Piper Cori" : "Pepper")));
+        b.setText("Voice: " + ("openai".equals(voice) ? ("coral".equals(onlineVoice) ? "OpenAI Coral" : "OpenAI Marin") : "Pepper"));
     }
     private static LinearLayout settingsColumn(View view) {
         if (view instanceof ScrollView && ((ScrollView) view).getChildCount() > 0 && ((ScrollView) view).getChildAt(0) instanceof LinearLayout)

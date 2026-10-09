@@ -1172,8 +1172,8 @@ class MainActivity : RobotActivity(), RobotLifecycleCallbacks {
     private fun speak(text: String) {
         runOnUiThread {
             val ctx = qiContext
-            if (ctx == null && !speechController.usesCori()) {
-                Toast.makeText(this, "Pepper voice is waiting for the robot connection. You can choose Cori in Settings.", Toast.LENGTH_LONG).show()
+            if (ctx == null) {
+                Toast.makeText(this, "Pepper voice is waiting for the robot connection.", Toast.LENGTH_LONG).show()
                 return@runOnUiThread
             }
             if (text.isBlank()) return@runOnUiThread
@@ -1188,9 +1188,9 @@ class MainActivity : RobotActivity(), RobotLifecycleCallbacks {
             speechJob = lifecycleScope.launch {
                 try {
                     val completed = speechController.speak(cleanText, ctx)
-                    if (!completed && speechController.usesCori()) {
+                    if (!completed) {
                         Toast.makeText(this@MainActivity,
-                            "Cori unavailable. Check the voice engine or choose Pepper native voice in Settings.",
+                            "Pepper voice unavailable. Check the robot connection.",
                             Toast.LENGTH_LONG).show()
                     }
                     if (epoch == speechEpoch) isSpeaking = false

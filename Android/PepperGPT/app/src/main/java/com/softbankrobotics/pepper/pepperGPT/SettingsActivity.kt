@@ -58,11 +58,9 @@ class SettingsActivity : AppCompatActivity() {
 
         val prefs = getSharedPreferences(PREFS, MODE_PRIVATE)
         binding.spinnerVoice.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item,
-            listOf("Pepper native voice", "Piper / Cori (English, offline)"))
-        binding.spinnerVoice.setSelection(if (prefs.getString("voice_mode", "pepper") == "cori") 1 else 0)
-        binding.btnVoiceDemo.setOnClickListener {
-            startActivity(Intent(this, VoicePreviewActivity::class.java))
-        }
+            listOf("Pepper native voice"))
+        binding.spinnerVoice.setSelection(0)
+
 
         // Load existing User Keys (if any)
         val userOpenAi = prefs.getString(KEY_API, "") ?: ""
@@ -206,7 +204,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun savePrefs(prefs: android.content.SharedPreferences, key: String, weather: String, city: String, persona: String) {
         prefs.edit()
-            .putString("voice_mode", if (binding.spinnerVoice.selectedItemPosition == 1) "cori" else "pepper")
+            .putString("voice_mode", "pepper")
             .putString("ssh_known_hosts", binding.editSshKnownHosts.text.toString().trim())
             .putString("ssh_host", binding.editSshHost.text.toString().trim())
             .putString("ssh_user", binding.editSshUser.text.toString().trim())
