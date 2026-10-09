@@ -69,6 +69,7 @@ public final class ModelSettings {
     private static void edit(Activity activity) {
         LinearLayout fields = new LinearLayout(activity);
         fields.setOrientation(LinearLayout.VERTICAL);
+        fields.setFocusableInTouchMode(true);
         int padding = Math.round(20 * activity.getResources().getDisplayMetrics().density);
         fields.setPadding(padding, padding / 2, padding, padding / 2);
         EditText[] inputs = new EditText[KEYS.length];
@@ -116,6 +117,8 @@ public final class ModelSettings {
                 dialog.dismiss();
             });
         });
+        dialog.getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+                | android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         dialog.show();
     }
 
