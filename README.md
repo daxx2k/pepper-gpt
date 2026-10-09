@@ -38,14 +38,19 @@ These capabilities describe the restored robot integration. The source release c
 
 ## Project status
 
-This is a **source-only release**. It does not include an installable APK or anyone's credentials.
+An installable **2.7.1 beta APK** is available in [GitHub Releases](https://github.com/daxx2k/pepper-gpt/releases/tag/v2.7.1-beta.1). Download `PepperGPT-2.7.1-beta.1-armv7.apk` for Pepper 2.9 with the Android tablet (Android 6.0, ARMv7).
+
+The APK contains the restored integration described above, including OpenAI voices and the ENG/ITA selector. **It contains no embedded API keys or robot login credentials.** Open Settings after installing and enter your own OpenAI key and, if needed, OpenWeather key. Optional SSH helpers require your own credentials and a verified `known_hosts` entry. These settings are saved privately on the tablet; they are not uploaded to this repository.
+
+This first downloadable version is a **prerelease**: it is based on the previously tested robot integration, with narrowly scoped credential and distribution changes. The sanitized APK has passed archive privacy, signature and Android compatibility checks, but has not yet had a fresh on-robot regression test. See the release notes for validation scope.
 
 | Location | What it contains |
 | --- | --- |
 | `Android/PepperGPT` | The cleaned 2.8.x development app, including native Pepper speech, model settings and semantic radio recognition. |
 | `tools/stable-voice` and `tools/patch-*.py` | Integration helpers for the separate restored 2.7.x app, including streamed OpenAI voices, ENG/ITA support, touch interruption and speech gestures. |
+| `tools/release` | Runtime SSH settings and the credential-removal patch used for the downloadable restored integration. |
 
-**Building the Gradle development app does not yet reproduce the complete restored integration.** Its OpenAI voice and language-switch helpers are not wired into that build. Integration helpers share `ModelSettings.java` and `RadioIntent.java` from the development source. Older private APKs are excluded because they may embed credentials.
+**Building the Gradle development app does not yet reproduce the complete restored integration.** Its OpenAI voice and language-switch helpers are not wired into that build. Integration helpers share `ModelSettings.java` and `RadioIntent.java` from the development source. Older private APKs are excluded because they may embed credentials. The downloadable beta was separately sanitized and audited; it is not a build of the Gradle development baseline. See [the integration packaging notes](tools/release/README.md).
 
 The slow offline Cori engine has been removed. Native Pepper speech and OpenAI Coral/Marin remain available in the restored integration.
 
@@ -82,4 +87,4 @@ Use the ARMv7 APK for Pepper; x86 is not the tablet ABI. Build outside a synchro
 
 The development build and fourteen unit tests passed. Separate checks cover Italian feature routing and semantic radio intent; a user confirmed that an indirect Italian request opened the player and produced audible music on Pepper. This is not a full physical regression of every module. See `CODE_REVIEW.md` for scope and remaining limitations.
 
-Personal configuration, conversation history, logs, recovery files, credentials, signing keys and private APKs are excluded from this repository. Use your own credentials and keep them out of Git. See `SECURITY.md` and `THIRD_PARTY.md` for security notes and component attribution. Existing asset and dependency rights are not reassigned.
+Personal configuration, conversation history, logs, recovery files, credentials, signing keys and private APKs are excluded from this repository and downloadable APK. Use your own credentials and keep them out of Git. See `SECURITY.md` and `THIRD_PARTY.md` for security notes and component attribution. Existing asset and dependency rights are not reassigned.
