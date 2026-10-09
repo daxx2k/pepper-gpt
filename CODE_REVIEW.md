@@ -53,3 +53,8 @@ The user requested removal of the slow local voice. Its engine initializer, prov
 ## Natural radio requests
 
 Italian radio routing also recognizes requests to make music audible (for example, asking to hear the radio) and equivalent listening phrases. Tests include these commands and negative conversational mentions of radio/music. Original player, stations, radio screen and speech/gesture helpers are unchanged. The default and pop stream endpoints returned HTTP 200 with audio/mpeg data from the robot network during diagnosis; this is not proof of audible tablet playback.
+
+
+## Semantic radio fallback
+
+A neutral, separate intent request uses the configured chat model for unfamiliar audio-related wording; ordinary conversation does not receive new tool schemas or response-format changes. Only validated play/stop commands and existing default/pop/synthwave selections reach the existing handler. No model or preference migration is performed. Normal playback handlers, all other feature handlers, gestures, voice streaming and private history remain untouched. API tests with the current model covered 7 playback/stop requests and 5 non-action cases, including imperfect transcription, indirect wording, factual discussion, past events and negation. These passed with low reasoning effort in the classifier; the normal chat effort is unchanged. The user physically confirmed that an indirect Italian request opened the radio screen and produced audible music. Other playback controls and all other physical modules were not re-tested in this change.

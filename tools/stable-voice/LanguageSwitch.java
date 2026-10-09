@@ -30,7 +30,7 @@ public final class LanguageSwitch {
                 italian() ? com.aldebaran.qi.sdk.object.locale.Language.ITALIAN : com.aldebaran.qi.sdk.object.locale.Language.ENGLISH,
                 italian() ? com.aldebaran.qi.sdk.object.locale.Region.ITALY : com.aldebaran.qi.sdk.object.locale.Region.UNITED_KINGDOM);
     }
-    public static String route(String text) { return LanguageRules.route(text); }
+    public static String route(String text) { return LanguageRules.route(RadioIntent.route(text)); }
     public static String speech(String text) { return italian() ? LanguageRules.speech(text) : text; }
     public static String requestJson(String original) {
         try {

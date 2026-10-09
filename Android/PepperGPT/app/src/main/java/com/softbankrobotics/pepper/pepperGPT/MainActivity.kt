@@ -857,17 +857,7 @@ class MainActivity : RobotActivity(), RobotLifecycleCallbacks {
         return keywords.any { lower.contains(it) }
     }
 
-    private fun isRadioRequest(message: String): Boolean {
-        val lower = message.toLowerCase(Locale.getDefault())
-        // Direct station/genre matches
-        if (lower.contains("synthwave") || lower.contains("nightride") || lower.contains("181.fm")) return true
-        
-        // Command matches
-        if (lower.contains("stop") && (lower.contains("music") || lower.contains("radio"))) return true
-        if (lower.contains("play") && (lower.contains("music") || lower.contains("radio") || lower.contains("pop"))) return true
-        
-        return false
-    }
+    private fun isRadioRequest(message: String): Boolean = RadioIntent.isRadioRequest(this, message, message)
 
     private fun isImageRequest(message: String): Boolean {
         val lower = message.toLowerCase(Locale.getDefault())
@@ -1848,7 +1838,7 @@ class MainActivity : RobotActivity(), RobotLifecycleCallbacks {
 
     
     private suspend fun handleRadioRequest(message: String) {
-        val lower = message.toLowerCase(Locale.getDefault())
+        val lower = RadioIntent.route(message).toLowerCase(Locale.getDefault())
         if (lower.contains("stop")) {
             radioManager.stop()
             speakAndWait("Stopping the music.")

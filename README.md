@@ -33,3 +33,5 @@ The development build and ten unit tests passed, including independent model sel
 This is a source-only repository: no personal configuration, conversations, logs, private backups, credentials, signing keys or application APKs. See `SECURITY.md`. No new license is assigned to inherited code or animation assets.
 
 The slow Cori option and its separate TTS Engine application have been removed. The restored stable integration keeps native Pepper and OpenAI Coral/Marin voices, streaming, touch interruption and contextual speech gestures.
+
+Radio requests have a semantic fallback using the configured chat model: unfamiliar radio/music wording is classified independently of personality and old conversation history, then forwarded to the original player handler. Plain conversation and other feature APIs retain their existing request/response format. A broader topic check limits classification to audio-related requests. Unambiguous short commands stay local. Semantic interpretation can add several seconds and requires the same configured OpenAI key.
