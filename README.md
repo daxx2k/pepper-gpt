@@ -1,5 +1,7 @@
 # PepperGPT
 
+[![Buy me a coffee](https://img.shields.io/badge/Buy_me_a_coffee-Support_my_projects-FFDD00?logo=buymeacoffee&logoColor=000000)](https://buymeacoffee.com/daxx2k)
+
 <img src="Icon/ic_launcher.png" alt="PepperGPT icon" width="140" />
 
 **Talk to a robot, ask questions, share stories and explore ideas together.**
