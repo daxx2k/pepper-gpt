@@ -40,11 +40,13 @@ These capabilities describe the restored robot integration. The source release c
 
 ## Project status
 
-An installable **2.7.1 beta APK** is available in [GitHub Releases](https://github.com/daxx2k/pepper-gpt/releases/tag/v2.7.1-beta.1). Download `PepperGPT-2.7.1-beta.1-armv7.apk` for Pepper 2.9 with the Android tablet (Android 6.0, ARMv7).
+An installable **2.7.2 beta APK** is available in [GitHub Releases](https://github.com/daxx2k/pepper-gpt/releases/tag/v2.7.2-beta.1). Download `PepperGPT-2.7.2-beta.1-armv7.apk` for Pepper 2.9 with the Android tablet (Android 6.0, ARMv7).
 
 The APK contains the restored integration described above, including OpenAI voices and the ENG/ITA selector. **It contains no embedded API keys or robot login credentials.** Open Settings after installing and enter your own OpenAI key and, if needed, OpenWeather key. Optional SSH helpers require your own credentials and a verified `known_hosts` entry. These settings are saved privately on the tablet; they are not uploaded to this repository.
 
-This first downloadable version is a **prerelease**: it is based on the previously tested robot integration, with narrowly scoped credential and distribution changes. The sanitized APK has passed archive privacy, signature and Android compatibility checks, but has not yet had a fresh on-robot regression test. See the release notes for validation scope.
+In the app menu, select **Realtime voice (experiment)** to try a separate push-to-talk conversation. Hold the talk button while speaking, then release to hear Pepper's reply. It uses your configured OpenAI API key and the selected English or Italian conversation language. Choose **Close** to return to classic mode and its activities.
+
+This APK is a **prerelease**. Realtime was exercised on Pepper's Android 6 tablet using the equivalent development build; its first audio was queued about one second after releasing the talk button in three observed turns. The downloadable build includes the same Realtime code and passes archive privacy, signature and Android compatibility checks. See the release notes for validation scope.
 
 | Location | What it contains |
 | --- | --- |

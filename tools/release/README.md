@@ -1,6 +1,6 @@
 # Restored integration packaging
 
-The downloadable 2.7.1 beta is a sanitized packaging of the restored 2.7.x integration. It is separate from the Gradle development baseline in `Android/PepperGPT`; building that baseline does not reproduce this APK. A complete source-only reproduction of the restored integration is not yet available.
+The downloadable restored integration is a sanitized packaging of the restored 2.7.x integration. It is separate from the Gradle development baseline in `Android/PepperGPT`; building that baseline does not reproduce this APK. A complete source-only reproduction of the restored integration is not yet available.
 
 `ReleaseSettings.java` supplies optional SSH configuration from runtime preferences. SSH remains disabled until host, user, password and a verified `known_hosts` entry are supplied. Connections require `StrictHostKeyChecking=yes`. Restart the app after changing SSH settings. Native speech, gestures and awareness use QiSDK.
 
@@ -16,3 +16,6 @@ Packaging procedure for maintainers:
 6. Publish the sanitized signed APK and SHA256 checksum as a beta until fresh on-device validation is complete.
 
 The release is signed with the existing integration certificate so compatible installations can be updated. A build signed with a different certificate cannot be updated in place. Back up any needed settings/history before changing installation baselines; uninstalling erases app data. Never force-stop a robot-focused app: first return to the tablet home screen and let QiSDK release robot focus.
+
+
+The 2.7.2 beta starts from the sanitized 2.7.1 integration. Compile `tools/stable-voice/RealtimeLab.java` against Android SDK 28, the existing OkHttp and Okio dependencies, QiSDK and the restored integration helpers. Convert with D8 at API 23 and merge its generated smali into the application DEX. Apply `tools/patch-realtime-lab.py` to the decoded copy, bump the manifest and BuildConfig to 2.7.2/code 91, then follow the alignment, signing and archive audit steps above. The patch adds a menu entry and ties the experimental session to robot focus, touch and activity pause.
