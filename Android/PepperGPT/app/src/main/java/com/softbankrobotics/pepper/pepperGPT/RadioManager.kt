@@ -65,6 +65,8 @@ class RadioManager {
         }
     }
 
+    fun audioSessionId(): Int = mediaPlayer?.audioSessionId ?: 0
+
     fun isPlaying(): Boolean {
         return try {
             mediaPlayer?.isPlaying == true

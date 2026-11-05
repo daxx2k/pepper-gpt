@@ -104,6 +104,7 @@ public final class RadioStations {
         else if (state.startsWith("Connecting")) state = it ? "Connessione…" : "Connecting…";
         else if (it && state.startsWith("Error:")) state = "Errore radio" + state.substring(5);
         view.setText(state);
+        RadioVisualizerScreen.playback(view, playingLabel(state));
     }
 
     public static boolean playingLabel(CharSequence state) {

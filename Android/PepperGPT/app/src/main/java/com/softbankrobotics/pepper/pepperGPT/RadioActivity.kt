@@ -3,6 +3,7 @@ package com.softbankrobotics.pepper.pepperGPT
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.MotionEvent
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.ScaleAnimation
@@ -69,6 +70,7 @@ class RadioActivity : AppCompatActivity(), RobotLifecycleCallbacks {
         
         statusText = findViewById(R.id.statusText)
         visualizerView = findViewById(R.id.visualizerView)
+        RadioVisualizerScreen.attach(this, statusText, visualizerView, radioManager)
         stopButton = findViewById(R.id.stopButton)
         
         val stationName = intent.getStringExtra("EXTRA_STATION_NAME") ?: "Unknown Station"
@@ -185,10 +187,12 @@ class RadioActivity : AppCompatActivity(), RobotLifecycleCallbacks {
         stationNameText.text = name
         statusText.text = "Changing Station..."
         visualizerView.setColor(RadioStations.visualizerColor(this))
+        RadioVisualizerScreen.stop(this)
         radioManager.play(url)
     }
 
     private fun stopRadio() {
+        RadioVisualizerScreen.stop(this)
         radioManager.stop()
         visualizerView.setPlaying(false)
         stopDancing()
@@ -240,6 +244,11 @@ class RadioActivity : AppCompatActivity(), RobotLifecycleCallbacks {
     
     // Pulse animation removed in favor of MusicVisualizerView
     
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        RadioVisualizerScreen.touch(this, event)
+        return super.dispatchTouchEvent(event)
+    }
+
     override fun onResume() {
         super.onResume()
         hideSystemUI()
@@ -289,12 +298,10 @@ class RadioActivity : AppCompatActivity(), RobotLifecycleCallbacks {
         audioManager.setStreamVolume(android.media.AudioManager.STREAM_MUSIC, 5, 0)
         
         val station = stationNameText.text.toString()
-        val currentStationUrl = this.stationUrl
         
         speechJob = radioScope.launch {
             if (speechController.speak("Playing $station", qiContext) && this@RadioActivity.qiContext === qiContext) {
                 applyVolume(audioManager)
-                radioManager.play(currentStationUrl)
             }
         }
     }

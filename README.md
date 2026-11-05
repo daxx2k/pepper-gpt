@@ -38,11 +38,13 @@ For example, you can say:
 
 These capabilities describe the restored robot integration. The source release contains separate development and integration baselines, explained below.
 
-## Download PepperGPT 2.8.1
+## Download PepperGPT 2.8.4
 
-[Download the signed APK](https://github.com/daxx2k/pepper-gpt/releases/download/v2.8.1/PepperGPT-2.8.1-armv7.apk) for **Pepper 2.9 Android** (Android 6.0 / API 23, ARMv7). The [release page](https://github.com/daxx2k/pepper-gpt/releases/tag/v2.8.1) includes the SHA-256 checksum.
+[Download the signed APK](https://github.com/daxx2k/pepper-gpt/releases/download/v2.8.4/PepperGPT-2.8.4-armv7.apk) for **Pepper 2.9 Android** (Android 6.0 / API 23, ARMv7). The [release page](https://github.com/daxx2k/pepper-gpt/releases/tag/v2.8.4) includes the SHA-256 checksum.
 
 Tap **Start Listening** for hands-free Realtime conversation in English or Italian. Pepper detects when you finish speaking and shows when she is listening, thinking and replying. The audio queue handles bursts of audio fragments during longer replies. The interface folds into a status icon after ten seconds without touch, and a tap brings the controls back.
+
+The radio visualizer has 12 frequency bands driven by the station audio. It fills the screen after ten seconds of playback without touch. Tap the screen to bring back stations and volume while playback continues.
 
 The APK includes illustrated stories, recipes, weather, radio, on-demand vision and local memory. In Settings, enter your own API keys. Optional SSH helpers require your own robot settings and a verified host key. The download contains no embedded credentials, private settings or chat history.
 
