@@ -64,6 +64,9 @@ public final class LanguageRulesTest {
         assert LanguageRules.route("What's the weather in London right now?").equals("weather in london");
         assert LanguageRules.route("What's the weather like in New York today, please?").equals("weather in new york");
         assert LanguageRules.route("How cold is it in Edinburgh at the moment?").equals("temperature in edinburgh");
+        assert LanguageRules.route("Pepper, can you tell me the weather?").equals("weather today");
+        assert LanguageRules.route("Hey Pepper, could you show me the weather outside, please?").equals("weather today");
+        assert LanguageRules.route("I like talking about the weather.").equals("I like talking about the weather.");
         assert LanguageRules.route("Una storia, per favore.").startsWith("story please");
         assert LanguageRules.route("Pepper, puoi raccontarmi una storia sui robot?").contains("tell me a story");
         assert LanguageRules.route("Vorrei una ricetta per la pasta").equals("recipe for la pasta");

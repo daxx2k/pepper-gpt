@@ -25,6 +25,13 @@ public final class LanguageRules {
     private static final Pattern ENGLISH_WEATHER_TRAILING_WORDS = Pattern.compile(
             "(?:\\s+(?:right now|at the moment|today|now|this (?:morning|afternoon|evening)|please|thanks|thank you))+$");
 
+    private static final Pattern ENGLISH_WEATHER_DEFAULT = Pattern.compile(
+            "^(?:(?:hey|hi|okay|ok)\\s+)?(?:pepper\\s+)?"
+            + "(?:(?:can|could|would|will) you\\s+)?(?:please\\s+)?"
+            + "(?:(?:tell|show|give) (?:me|us)\\s+|what(?:'s| is)\\s+|how(?:'s| is)\\s+)?"
+            + "(?:the\\s+)?(?:current\\s+)?weather"
+            + "(?:\\s+(?:like|here|outside|today|right now|now|at the moment|please|thanks|thank you))*[.]?$");
+
     private LanguageRules() { }
     public static String route(String text) {
         String value = text.toLowerCase(Locale.ROOT).replace('’', '\'').replaceAll("[,!?]+", " ").replaceAll("\\s+", " ").trim();
@@ -72,6 +79,7 @@ public final class LanguageRules {
             String cue = englishWeather.group(1);
             return (cue.startsWith("temperature") || cue.startsWith("how") ? "temperature in " : "weather in ") + city;
         }
+        if (ENGLISH_WEATHER_DEFAULT.matcher(value).matches()) return "weather today";
         String weather = weatherRoute(value);
         if (weather != null) return weather;
         // Explicit requests referring back to a story already mentioned in conversation.
