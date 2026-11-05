@@ -6,9 +6,32 @@ import java.util.regex.Pattern;
 
 /** Translate command cues only; leave the original user message and feature content intact. */
 public final class LanguageRules {
+    private static final Pattern ENGLISH_STORY = Pattern.compile(
+            "^(?:\\s*(?:please|(?:hey\\s+)?pepper)\\b[\\s,:-]+)*"
+            + "(?:(?:can|could|would|will)\\s+you\\s+)?(?:please\\s+)?"
+            + "(?:tell|read|narrate|write)\\s+(?:(?:me|us)\\s+)?"
+            + "(?:(?:a|an|some|another|one)\\s+)?"
+            + "(?:(?:short|little|bedtime|illustrated|quick|funny|new|scary|fairy|adventure|fantasy)\\s+){0,3}"
+            + "(?:story|tale)\\b");
+
+    private static final Pattern ITALIAN_TELL_STORY = Pattern.compile(
+            "^(?:(?:ehi\\s+)?pepper\\s+)?(?:per favore\\s+)?"
+            + "(?:(?:mi\\s+)?(?:puoi|potresti|sapresti)\\s+(?:dire|dirmi)|dimmi|mi\\s+(?:dici|diresti))\\s+"
+            + "(?:una|un|qualche)\\s+(?:(?:breve|piccol[oa]|bell[oa]|illustrat[oa]|cort[oa])\\s+){0,3}"
+            + "(?:storia|fiaba|favola|racconto)\\b");
+
+    private static final Pattern ENGLISH_WEATHER_LOCATION = Pattern.compile(
+            "\\b(weather(?: like)? in|forecast (?:in|for)|temperature in|how (?:hot|cold) is it in)\\s+(.+)");
+    private static final Pattern ENGLISH_WEATHER_TRAILING_WORDS = Pattern.compile(
+            "(?:\\s+(?:right now|at the moment|today|now|this (?:morning|afternoon|evening)|please|thanks|thank you))+$");
+
     private LanguageRules() { }
     public static String route(String text) {
         String value = text.toLowerCase(Locale.ROOT).replace('’', '\'').replaceAll("[,!?]+", " ").replaceAll("\\s+", " ").trim();
+        Matcher englishStory = ENGLISH_STORY.matcher(value);
+        if (englishStory.find()) return "tell me a story" + value.substring(englishStory.end());
+        Matcher italianTellStory = ITALIAN_TELL_STORY.matcher(value);
+        if (italianTellStory.find()) return "tell me a story" + value.substring(italianTellStory.end());
         // Recognize the request verb and story noun with optional descriptive words between them.
         // The original prompt still reaches the story generator unchanged.
         Matcher storyRequest = Pattern.compile("\\b(?:(?:mi|ci)\\s+(?:racconti|racconteresti|racconterai|leggi|leggeresti)|raccontami|raccontaci|racconta|raccontate|raccontare|raccontarmi|raccontarci|leggimi|leggici|leggi|narrami|narra|scrivimi|scrivi)\\b[^.;:\\n]{0,120}?\\b(?:storia|favola|fiaba|racconto)\\b").matcher(value);
@@ -42,6 +65,13 @@ public final class LanguageRules {
         Matcher imagine = Pattern.compile("\\b(?:immaginami|immaginarmi|immaginaci)\\s+(?:come|nei panni di)\\b").matcher(value);
         if (imagine.find()) return value.substring(0, imagine.start()) + "imagine me as" + value.substring(imagine.end());
         if (value.matches(".*\\b(?:come sarei|come mi vedresti|che aspetto avrei)\\b.*")) return "what would i look like " + value;
+        Matcher englishWeather = ENGLISH_WEATHER_LOCATION.matcher(value);
+        if (englishWeather.find()) {
+            String city = englishWeather.group(2).replaceAll("[.]+$", "").trim();
+            city = ENGLISH_WEATHER_TRAILING_WORDS.matcher(city).replaceFirst("");
+            String cue = englishWeather.group(1);
+            return (cue.startsWith("temperature") || cue.startsWith("how") ? "temperature in " : "weather in ") + city;
+        }
         String weather = weatherRoute(value);
         if (weather != null) return weather;
         // Explicit requests referring back to a story already mentioned in conversation.
@@ -93,7 +123,7 @@ public final class LanguageRules {
         return value.substring(0, match.start()) + english + (retain ? " " + match.group(1) : "") + value.substring(match.end());
     }
     private static String weatherRoute(String value) {
-        Matcher marker = Pattern.compile("\\b(?:che tempo (?:fa|farà|c'è)|com'è il tempo|come è il tempo|(?:qual è|com'è|come è|quanti gradi è) la temperatura|quanti gradi (?:ci sono|fa)|che temperatura (?:c'è|fa)|che ore sono|che ora è|previsioni(?: del tempo| meteo)?|meteo)\\b").matcher(value);
+        Matcher marker = Pattern.compile("\\b(?:che tempo (?:fa|farà|c'è)|com'è il tempo|come è il tempo|(?:qual è|com'è|come è|quanti gradi è) la temperatura|quanti gradi (?:ci sono|fa)|che temperatura (?:c'è|fa)|che ore sono|che ora è|previsioni(?: del tempo| meteo)?|meteo)(?![\\p{L}\\p{N}_])").matcher(value);
         if (!marker.find()) return null;
         String cue = marker.group();
         // Bare mentions such as 'ho visto le previsioni' remain conversation.

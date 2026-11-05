@@ -22,8 +22,11 @@ class RadioIntentTest {
 
     @Test fun validatedActionsUseOriginalRadioCommands() {
         assertEquals("play radio", RadioIntent.command(response("play", "default")))
-        assertEquals("play radio pop", RadioIntent.command(response("play", "pop")))
-        assertEquals("play radio synthwave", RadioIntent.command(response("play", "synthwave")))
+        assertEquals("play radio chillsynth", RadioIntent.command(response("play", "chillsynth")))
+        assertEquals("play radio staddenhaag", RadioIntent.command(response("play", "staddenhaag")))
+        assertEquals("plazaone", RadioStations.resolve("Nightwave Plaza").id)
+        assertEquals("nightride", RadioStations.resolve("play radio").id)
+        assertNull(RadioIntent.command(response("play", "pop")))
         assertEquals("stop radio", RadioIntent.command(response("stop", "default")))
     }
 

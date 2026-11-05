@@ -93,6 +93,7 @@ public final class LegacyVoiceAdapter {
             if (!finished.compareAndSet(false, true)) return;
             if (streamedAudio != null) streamedAudio.cancel();
             stopBody();
+            RobotLights.clear(this);
             if (current == this) { current = null; }
             restoreVolume();
             promise.setCancelled();
@@ -102,6 +103,7 @@ public final class LegacyVoiceAdapter {
             if (!finished.compareAndSet(false, true)) return;
             if (streamedAudio != null) streamedAudio.cancel();
             stopBody();
+            RobotLights.clear(this);
             if (current == this) { current = null; }
             restoreVolume();
             promise.setError(reason);
@@ -112,6 +114,7 @@ public final class LegacyVoiceAdapter {
         void complete() {
             if (!finished.compareAndSet(false, true)) return;
             stopBody();
+            RobotLights.clear(this);
             if (current == this) current = null;
             restoreVolume();
             promise.setValue(null);
@@ -144,7 +147,11 @@ public final class LegacyVoiceAdapter {
     public static Say.Async async(Say say) {
         Say.Async result = say.async();
         Info info = BUILT.get(say);
-        if (info != null) SAY_INFO.put(result, info);
+        if (info != null) {
+            SAY_INFO.put(result, info);
+            Activity a=info.activity.get();
+            if (StoryFollow.story(a)) say.addOnStartedListener(() -> StoryFollow.heard(a,info.text));
+        }
         return result;
     }
     public static Future<Void> runAsync(Say.Async say) {
@@ -154,7 +161,16 @@ public final class LegacyVoiceAdapter {
         String mode = a == null ? "pepper" : a.getSharedPreferences(PREFS, 0).getString("voice_mode", "pepper");
         if (a == null || info == null || !"openai".equals(mode)) {
             Future<Void> future = say.run();
-            if (a != null) ACTIVE.put(a, future);
+            if (a != null) {
+                ACTIVE.put(a, future);
+                String color = moduleLight(a);
+                if (color != null) {
+                    UI.post(() -> {
+                        if (owner.get() == a && !future.isDone()) RobotLights.show(future, color);
+                    });
+                    future.thenConsume(result -> UI.post(() -> RobotLights.clear(future)));
+                }
+            }
             return future;
         }
         Task task = new Task(info);
@@ -184,7 +200,7 @@ public final class LegacyVoiceAdapter {
         if (text.isEmpty()) { task.complete(); return; }
         Activity a = task.info.activity.get();
         task.story = a != null && "story".equals(a.getIntent().getStringExtra("EXTRA_MODE"));
-        task.pieces = SpeechChunks.split(text, 1600, 1600, false);
+        task.pieces = StoryFollow.story(a) ? StoryFollow.segments(text) : SpeechChunks.split(text, 1600, 1600, false);
         if (task.pieces.isEmpty()) { task.complete(); return; }
         task.raiseExternalVolume(taskOwner);
         nextChunk(task);
@@ -196,7 +212,13 @@ public final class LegacyVoiceAdapter {
         int index = task.nextPiece++;
         task.lastId = task.id + ":" + index;
         String chunk = task.pieces.get(index);
-            task.streamedAudio = OpenAiVoice.start(a, chunk, task.story, () -> startBody(task, chunk), () -> {
+            task.streamedAudio = OpenAiVoice.start(a, chunk, task.story, () -> {
+                if (task.finished.get() || current != task) return;
+                StoryFollow.heard(a,chunk);
+                String color = moduleLight(a);
+                if (color != null) RobotLights.show(task, color);
+                startBody(task,chunk);
+            }, () -> {
                 if (task.finished.get() || current != task) return;
                 task.stopBody();
                 if (task.nextPiece == task.pieces.size()) task.complete();
@@ -204,17 +226,21 @@ public final class LegacyVoiceAdapter {
             }, () -> task.fail("OpenAI voice request failed"));
     }
 
+    private static String moduleLight(Activity a) {
+        if ("RadioActivity".equals(a.getClass().getSimpleName())) return null;
+        if ("WeatherModeActivity".equals(a.getClass().getSimpleName())) return "weather";
+        String mode = a.getIntent().getStringExtra("EXTRA_MODE");
+        if ("story".equals(mode) || "recipe".equals(mode)) return mode;
+        return "speaking";
+    }
+
     private static void startBody(Task task, String text) {
         Activity a = task.info.activity.get();
         Binding binding = a == null ? null : TOUCH.get(a);
         if (task.finished.get() || current != task || owner.get() != a || binding == null || !binding.live) return;
         task.stopBody();
-        // Keep native contextual body language. Silence only this native utterance,
-        // leaving the user's global robot volume and native voice settings alone.
-        String silentText = "\\vol=0\\\\rspd=80\\" + text.replaceAll("\\\\vol=[^\\\\]*\\\\", "");
-        // External audio supplies its own language. Use the previously working native
-        // gesture engine independently of whether Italian native TTS is installed.
-        SayBuilder.with(binding.qi).withText(silentText).buildAsync().thenConsume(built -> UI.post(() -> {
+        if (StoryFollow.playWaitingPose(a)) return;
+        silentSay(binding.qi, text).thenConsume(built -> UI.post(() -> {
             if (task.finished.get() || current != task || owner.get() != a || !binding.live) return;
             if (built.hasError() || built.isCancelled()) { Log.w(TAG, "Speech body language unavailable"); return; }
             try { task.bodyAction = built.get().async().run(); }
@@ -224,6 +250,12 @@ public final class LegacyVoiceAdapter {
             });
             Log.i(TAG, "Native speech body language started");
         }));
+    }
+
+    static Future<Say> silentSay(QiContext qi, String text) {
+        // The robot's native Say chooses conversational body language from the actual words.
+        String spoken = "\\vol=0\\\\rspd=80\\" + text.replaceAll("\\\\vol=[^\\\\]*\\\\", "");
+        return SayBuilder.with(qi).withText(spoken).buildAsync();
     }
 
     private static final class SensorListener {
@@ -244,10 +276,12 @@ public final class LegacyVoiceAdapter {
         }
     }
     public static void onFocusGained(Activity a, QiContext qi) {
+        RealtimeLab.focus(a,qi);
         owner = new WeakReference<>(a);
 
         Binding previous = TOUCH.remove(a); if (previous != null) previous.close();
         Binding binding = new Binding(a, qi); TOUCH.put(a, binding);
+        UI.post(() -> StoryFollow.tryTabletCue(a));
         for (String name : new String[]{"Head/Touch", "LHand/Touch", "RHand/Touch"}) {
             qi.getTouch().async().getSensor(name).andThenConsume(sensor -> {
                 synchronized (binding) {
@@ -272,7 +306,13 @@ public final class LegacyVoiceAdapter {
             }).thenConsume(result -> { if (result.hasError()) Log.e(TAG, "Touch sensor unavailable: " + name); });
         }
     }
+    static QiContext focusedContext(Activity a) {
+        Binding binding = TOUCH.get(a);
+        return owner.get() == a && binding != null && binding.live ? binding.qi : null;
+    }
+
     public static void onFocusLost(Activity a) {
+        RealtimeLab.lose(a);
         Binding binding = TOUCH.remove(a); if (binding != null) binding.close();
         if (owner.get() == a) owner = new WeakReference<>(null);
         UI.post(() -> {
@@ -297,6 +337,9 @@ public final class LegacyVoiceAdapter {
         catch (ReflectiveOperationException e) { Log.d(TAG, "No speech hook: " + name); }
     }
     private static void stopSpeech(Activity a) {
+        RealtimeLab.interrupt(a);
+        StoryFollow.stopWaiting(a);
+        ContextGesture.stop(a);
         Object job = field(a, "storySpeechJob");
         if (job != null) try {
             Method m = job.getClass().getMethod("cancel", CancellationException.class); m.setAccessible(true); m.invoke(job, new Object[]{null});
@@ -322,7 +365,7 @@ public final class LegacyVoiceAdapter {
         button.setOnClickListener(view -> {
             String voice = a.getSharedPreferences(PREFS, 0).getString("voice_mode", "pepper");
             String onlineVoice = a.getSharedPreferences(PREFS, 0).getString("openai_voice", "marin");
-            new AlertDialog.Builder(a).setTitle("Voice")
+            AppThemeViews.show(new AlertDialog.Builder(a).setTitle("Voice")
                     .setSingleChoiceItems(new String[]{"Pepper voice", "OpenAI Coral — AI voice, online", "OpenAI Marin — AI voice, online"}, "openai".equals(voice) ? ("coral".equals(onlineVoice) ? 1 : 2) : 0, (dialog, selection) -> {
                         android.content.SharedPreferences.Editor preferences = a.getSharedPreferences(PREFS, 0).edit()
                                 .putString("voice_mode", selection > 0 ? "openai" : "pepper");
@@ -330,7 +373,7 @@ public final class LegacyVoiceAdapter {
                         preferences.apply();
                         updateVoiceLabel(a, button);
                         dialog.dismiss();
-                    }).setNegativeButton("Cancel", null).show();
+                    }).setNegativeButton("Cancel", null));
         });
         column.addView(button, 0, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
     }

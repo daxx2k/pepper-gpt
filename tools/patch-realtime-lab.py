@@ -10,6 +10,7 @@ def insert(s,method,code):
  return s[:end]+'\n    '+code+'\n'+s[end:]
 p=app/'MainActivity.smali';s=p.read_text(encoding='utf-8')
 s=insert(s,'.method public onCreateOptionsMenu(Landroid/view/Menu;)Z',f'invoke-static/range {{p0 .. p1}}, {pkg}->add(Landroid/app/Activity;Landroid/view/Menu;)V')
+s=insert(s,'.method public onCreateOptionsMenu(Landroid/view/Menu;)Z',f'invoke-static/range {{p0 .. p1}}, {pkg}->addHandsFree(Landroid/app/Activity;Landroid/view/Menu;)V')
 assert not re.search(r'(?m)^\.method .* onPause\(\)V',s)
 s+='\n.method protected onPause()V\n    .locals 0\n    invoke-static {p0}, '+pkg+'->stop(Landroid/app/Activity;)V\n    invoke-super {p0}, Lcom/aldebaran/qi/sdk/design/activity/RobotActivity;->onPause()V\n    return-void\n.end method\n'
 p.write_text(s,encoding='utf-8')

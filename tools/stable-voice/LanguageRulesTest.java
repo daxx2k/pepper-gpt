@@ -1,6 +1,14 @@
 package com.softbankrobotics.pepper.pepperGPT;
 public final class LanguageRulesTest {
     public static void main(String[] args) {
+        assert LanguageRules.route("Mi puoi dire una storia corta?").equals("tell me a story corta");
+        assert LanguageRules.route("Pepper, dimmi una breve fiaba sulla luna.").startsWith("tell me a story sulla luna");
+        assert LanguageRules.route("Mi puoi dire la storia di Roma?").equals("Mi puoi dire la storia di Roma?");
+        assert LanguageRules.route("Pepper, tell me a short story about a fox.").startsWith("tell me a story about a fox");
+        assert LanguageRules.route("Could you read me a bedtime story?").equals("tell me a story");
+        assert LanguageRules.route("Tell me, a story about the moon").equals("tell me a story about the moon");
+        assert LanguageRules.route("I read a short story yesterday.").equals("I read a short story yesterday.");
+        assert LanguageRules.route("Play the radio, please.").equals("Play the radio, please.");
         assert LanguageRules.route("Ehi Peppero, mi fai sentire la radio?").contains("play radio");
         assert LanguageRules.route("Eh, per me fa sentire la radio.").contains("play radio");
         assert LanguageRules.route("Fa sentire la radio").contains("play radio");
@@ -53,6 +61,9 @@ public final class LanguageRulesTest {
         assert LanguageRules.route("Raccontami una storia sui robot").equals("tell me a story sui robot");
         assert LanguageRules.route("Dammi una ricetta per la pasta").equals("recipe for la pasta");
         assert LanguageRules.route("Che tempo fa a Londra?").equals("weather in london");
+        assert LanguageRules.route("What's the weather in London right now?").equals("weather in london");
+        assert LanguageRules.route("What's the weather like in New York today, please?").equals("weather in new york");
+        assert LanguageRules.route("How cold is it in Edinburgh at the moment?").equals("temperature in edinburgh");
         assert LanguageRules.route("Una storia, per favore.").startsWith("story please");
         assert LanguageRules.route("Pepper, puoi raccontarmi una storia sui robot?").contains("tell me a story");
         assert LanguageRules.route("Vorrei una ricetta per la pasta").equals("recipe for la pasta");
@@ -63,7 +74,7 @@ public final class LanguageRulesTest {
         assert LanguageRules.route("Spegni la radio").equals("stop radio");
         assert LanguageRules.route("G genera un'immagine di un robot").contains("generate an image");
         assert LanguageRules.route("Trasformami in un astronauta").equals("transform me into un astronauta");
-        assert LanguageRules.route("Tell me a story about Mars").equals("Tell me a story about Mars");
+        assert LanguageRules.route("Tell me a story about Mars").equals("tell me a story about mars");
         assert LanguageRules.speech("The weather in London is light rain with a temperature of 12 degrees Celsius.")
                 .equals("Il tempo a London è pioggia leggera con una temperatura di 12 gradi Celsius.");
         assert LanguageRules.speech("Playing BBC Radio 4").equals("Sto riproducendo BBC Radio 4");

@@ -4,3 +4,5 @@ Android dependencies remain declared in `Android/PepperGPT/app/build.gradle`, in
 
 
 The previous offline voice engine and model integration have been removed. Existing illustration/editor assets are preserved; this document does not assert new ownership or grant a new license.
+
+Pepper Core Animations are redistributed with their original copyright, license and source reference in `Android/PepperGPT/app/src/main/assets/pepper_core_anims/`.

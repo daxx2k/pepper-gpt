@@ -15,17 +15,25 @@ import android.widget.TextView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-/** Runtime model selection; existing installations retain their original defaults. */
+/** Runtime model selection; custom settings continue to override the defaults. */
 public final class ModelSettings {
     private static final String PREFS = "PepperGPT_Prefs";
     private static final String[] KEYS = {"chat_model", "creative_model", "vision_model"};
     private static final String[] LABELS = {"Chat model", "Stories and recipes model", "Image analysis model"};
-    private static final String[] DEFAULTS = {"gpt-5-nano", "gpt-5-mini", "gpt-5-mini"};
+    private static final String LUNA = "gpt-5.6-luna";
+    private static final String[] DEFAULTS = {LUNA, LUNA, LUNA};
 
     public static String model(Context context, int category) {
         String value = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
                 .getString(KEYS[category], DEFAULTS[category]);
-        return value == null || value.trim().isEmpty() ? DEFAULTS[category] : value.trim();
+        if (value == null || value.trim().isEmpty()) return DEFAULTS[category];
+        switch (value.trim()) {
+            case "gpt-5-nano":
+            case "gpt-5-nano-2025-08-07": return DEFAULTS[0];
+            case "gpt-5-mini":
+            case "gpt-5-mini-2025-08-07": return DEFAULTS[1];
+            default: return value.trim();
+        }
     }
 
     public static void apply(Context context, JSONObject body) throws org.json.JSONException {
@@ -37,8 +45,9 @@ public final class ModelSettings {
         else return; // Image generation, transcription and speech keep their own models.
         String selected = model(context, category);
         body.put("model", selected);
-        // Legacy reasoning values are model-specific. For a custom model, use its API default.
-        if (!original.equals(selected)) body.remove("reasoning_effort");
+        // Chat Completions requires reasoning off for Luna's radio function call.
+        if (LUNA.equals(selected)) body.put("reasoning_effort", category == 0 ? "none" : "low");
+        else if (!original.equals(selected)) body.remove("reasoning_effort");
     }
 
     private static boolean hasImage(JSONArray messages) {
@@ -119,7 +128,7 @@ public final class ModelSettings {
         });
         dialog.getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
                 | android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-        dialog.show();
+        AppThemeViews.showDialog(dialog);
     }
 
     private static LinearLayout column(View view) {

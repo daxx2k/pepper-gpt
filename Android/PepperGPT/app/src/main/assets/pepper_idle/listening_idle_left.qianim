@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Animation typeVersion="2.0">
+    <ActuatorCurve fps="25" actuator="LShoulderPitch" unit="degree" mute="false">
+        <Key frame="12" value="90">
+            <Tangent side="right" abscissaParam="6" ordinateParam="0"/>
+        </Key>
+        <Key frame="34" value="76">
+            <Tangent side="left" abscissaParam="-7" ordinateParam="0"/>
+            <Tangent side="right" abscissaParam="9" ordinateParam="0"/>
+        </Key>
+        <Key frame="68" value="90">
+            <Tangent side="left" abscissaParam="-11" ordinateParam="0"/>
+        </Key>
+    </ActuatorCurve>
+</Animation>

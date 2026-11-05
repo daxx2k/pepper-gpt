@@ -13,18 +13,18 @@ public final class RadioIntent {
     public static boolean fastCommand(String text) {
         // Only unmistakable short commands bypass semantic understanding.
         return text != null && text.toLowerCase(java.util.Locale.ROOT).trim()
-                .matches("(?:play|stop) (?:radio|music)(?: (?:pop|synthwave))?[.!?]*");
+                .matches("(?:play|stop) (?:radio|music)(?: (?:synthwave|nightride))?[.!?]*");
     }
 
     public static void configure(JSONObject request) throws JSONException {
         JSONObject properties = new JSONObject()
                 .put("action", new JSONObject().put("type", "string").put("enum", new JSONArray().put("none").put("play").put("stop")))
                 .put("reply", new JSONObject().put("type", "string").put("description", "Your natural conversational answer for action none; empty string for play/stop, which the application performs."))
-                .put("station", new JSONObject().put("type", "string").put("enum", new JSONArray().put("default").put("pop").put("synthwave")));
+                .put("station", new JSONObject().put("type", "string").put("enum", RadioStations.ids()));
         JSONObject parameters = new JSONObject().put("type", "object").put("properties", properties)
                 .put("required", new JSONArray().put("action").put("station").put("reply")).put("additionalProperties", false);
         JSONObject function = new JSONObject().put("name", FUNCTION).put("strict", true)
-                .put("description", "Respond to the user or operate Pepper's radio. Choose action play when the latest user utterance requests listening to music/radio, even indirectly, informally or with speech transcription errors. A request for a musical background is playback, not a preference discussion. Choose station default whenever no specific supported choice is named; do not ask the user to choose a station for a generic playback request. Choose pop for pop music, synthwave for Synthwave, and stop for an affirmative request to stop music. Supported automatic choices are default/Synthwave (SomaFM) and Top 40 Pop. For factual questions, past events, general preferences, ordinary conversation, negated start requests, or unsupported named stations/artists: action none, station default, and a natural reply. Do not start playback merely because radio/music is mentioned. Never claim playback has started/stopped in an action none reply. Existing story/recipe/weather/image modules are separate.")
+                .put("description", "Respond to the user or operate Pepper's radio. Choose action play when the latest user utterance requests listening to music/radio, even indirectly, informally or with speech transcription errors. A request for a musical background is playback, not a preference discussion. Choose station default whenever no specific supported choice is named; do not ask the user to choose a station for a generic playback request. Choose a matching Neon FM station by its ID when requested, or default for a generic request. Default is Nightride FM. Supported choices: " + RadioStations.choices() + ". Choose stop for an affirmative request to stop music. For factual questions, past events, general preferences, ordinary conversation, negated start requests, or unsupported named stations/artists: action none, station default, and a natural reply. Do not start playback merely because radio/music is mentioned. Never claim playback has started/stopped in an action none reply. Existing story/recipe/weather/image modules are separate.")
                 .put("parameters", parameters);
         request.put("tools", new JSONArray().put(new JSONObject().put("type", "function").put("function", function)))
                 .put("tool_choice", "required").put("parallel_tool_calls", false);
@@ -56,7 +56,7 @@ public final class RadioIntent {
             JSONObject arguments = new JSONObject(function.getString("arguments"));
             if (arguments.length() != 3) return null;
             String action = arguments.getString("action"), station = arguments.getString("station");
-            if (!"default".equals(station) && !"pop".equals(station) && !"synthwave".equals(station)) return null;
+            if (!RadioStations.known(station)) return null;
             if ("stop".equals(action)) return "stop radio";
             if (!"play".equals(action)) return null;
             return "play radio" + ("default".equals(station) ? "" : " " + station);
@@ -77,9 +77,9 @@ public final class RadioIntent {
     }
 
     public static boolean candidate(String text) {
-        return text != null && java.util.regex.Pattern.compile(
+        return text != null && (RadioStations.mentionsStation(text) || java.util.regex.Pattern.compile(
                 "\\b(?:radio\\w*|music\\w*|musical\\w*|ascolt\\w*|sentir\\w*|suon\\w*|station\\w*|stazion\\w*|listen\\w*|hear\\w*|songs?|tunes?|synthwave|nightride|pop|sottofondo|playlist)\\b",
-                java.util.regex.Pattern.CASE_INSENSITIVE).matcher(text).find();
+                java.util.regex.Pattern.CASE_INSENSITIVE).matcher(text).find());
     }
 
     public static boolean isRadioRequest(Activity activity, String text, String normalized) {

@@ -19,7 +19,7 @@
 
     <!-- Soft Friendly Theme -->
     <color name="soft_bg">#F0F4F8</color>
-    <color name="soft_accent">#5E81AC</color>
+    <color name="soft_accent">#42688E</color>
     <color name="soft_text">#2E3440</color>
     <color name="soft_card">#FFFFFF</color>
 </resources>

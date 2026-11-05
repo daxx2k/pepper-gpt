@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Animation typeVersion="2.0">
+    <ActuatorCurve fps="25" actuator="RShoulderPitch" unit="degree" mute="false">
+        <Key frame="12" value="90">
+            <Tangent side="right" abscissaParam="6.67" ordinateParam="0"/>
+        </Key>
+        <Key frame="32" value="75">
+            <Tangent side="left" abscissaParam="-6.67" ordinateParam="0"/>
+            <Tangent side="right" abscissaParam="9.33" ordinateParam="0"/>
+        </Key>
+        <Key frame="60" value="86">
+            <Tangent side="left" abscissaParam="-9.33" ordinateParam="0"/>
+            <Tangent side="right" abscissaParam="10.33" ordinateParam="0"/>
+        </Key>
+        <Key frame="91" value="90">
+            <Tangent side="left" abscissaParam="-10.33" ordinateParam="0"/>
+        </Key>
+    </ActuatorCurve>
+    <ActuatorCurve fps="25" actuator="LShoulderPitch" unit="degree" mute="false">
+        <Key frame="12" value="90">
+            <Tangent side="right" abscissaParam="7.00" ordinateParam="0"/>
+        </Key>
+        <Key frame="33" value="88">
+            <Tangent side="left" abscissaParam="-7.00" ordinateParam="0"/>
+            <Tangent side="right" abscissaParam="8.33" ordinateParam="0"/>
+        </Key>
+        <Key frame="58" value="77">
+            <Tangent side="left" abscissaParam="-8.33" ordinateParam="0"/>
+            <Tangent side="right" abscissaParam="11.00" ordinateParam="0"/>
+        </Key>
+        <Key frame="91" value="90">
+            <Tangent side="left" abscissaParam="-11.00" ordinateParam="0"/>
+        </Key>
+    </ActuatorCurve>
+    <ActuatorCurve fps="25" actuator="RElbowRoll" unit="degree" mute="false">
+        <Key frame="12" value="12">
+            <Tangent side="right" abscissaParam="7.33" ordinateParam="0"/>
+        </Key>
+        <Key frame="34" value="23">
+            <Tangent side="left" abscissaParam="-7.33" ordinateParam="0"/>
+            <Tangent side="right" abscissaParam="9.33" ordinateParam="0"/>
+        </Key>
+        <Key frame="62" value="16">
+            <Tangent side="left" abscissaParam="-9.33" ordinateParam="0"/>
+            <Tangent side="right" abscissaParam="9.67" ordinateParam="0"/>
+        </Key>
+        <Key frame="91" value="12">
+            <Tangent side="left" abscissaParam="-9.67" ordinateParam="0"/>
+        </Key>
+    </ActuatorCurve>
+    <ActuatorCurve fps="25" actuator="LElbowRoll" unit="degree" mute="false">
+        <Key frame="12" value="-12">
+            <Tangent side="right" abscissaParam="8.00" ordinateParam="0"/>
+        </Key>
+        <Key frame="36" value="-15">
+            <Tangent side="left" abscissaParam="-8.00" ordinateParam="0"/>
+            <Tangent side="right" abscissaParam="8.67" ordinateParam="0"/>
+        </Key>
+        <Key frame="62" value="-21">
+            <Tangent side="left" abscissaParam="-8.67" ordinateParam="0"/>
+            <Tangent side="right" abscissaParam="9.67" ordinateParam="0"/>
+        </Key>
+        <Key frame="91" value="-12">
+            <Tangent side="left" abscissaParam="-9.67" ordinateParam="0"/>
+        </Key>
+    </ActuatorCurve>
+</Animation>

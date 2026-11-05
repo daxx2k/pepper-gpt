@@ -330,6 +330,7 @@ class MainActivity : RobotActivity(), RobotLifecycleCallbacks {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
+        ChatHeader.bindMenu(this, menu)
         return true
     }
 
@@ -403,6 +404,7 @@ class MainActivity : RobotActivity(), RobotLifecycleCallbacks {
                 }
             }
             updateListeningButtonAppearance()
+            ChatHeader.apply(this, currentTheme)
             // Notify adapter to refresh bubbles if needed
             if (::chatAdapter.isInitialized) chatAdapter.updateTheme(currentTheme)
         }
@@ -732,7 +734,7 @@ class MainActivity : RobotActivity(), RobotLifecycleCallbacks {
             }
 
             val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
-                .addFormDataPart("model", "whisper-1")
+                .addFormDataPart("model", "gpt-transcribe")
                 .addFormDataPart("file", audioFile.name, RequestBody.create(MediaType.parse("audio/wav"), audioFile))
                 .addFormDataPart("language", "en")
                 .addFormDataPart("response_format", "json")
@@ -961,6 +963,7 @@ class MainActivity : RobotActivity(), RobotLifecycleCallbacks {
                                     putExtra("EXTRA_THEME", currentTheme)
                                 }
                                 // Removed FLAG_ACTIVITY_NEW_TASK as it can break startActivityForResult on some Android 6 versions
+                                wasListeningBeforeSpeaking = wasListeningBeforeOpenAI
                                 startActivityForResult(intent, REQUEST_IMMERSIVE)
                                 hideSpinner()
                                 
@@ -1307,7 +1310,7 @@ class MainActivity : RobotActivity(), RobotLifecycleCallbacks {
     private suspend fun getWeatherSuspending(city: String): JSONObject? = withContext(Dispatchers.IO) {
         val apiKey = readWeatherKey()
         val formattedCity = URLEncoder.encode(city, "UTF-8")
-        val url = "https://api.openweathermap.org/data/2.5/weather?q=$formattedCity&appid=$apiKey&units=metric"
+        val url = "https://api.openweathermap.org/data/2.5/weather?q=$formattedCity&appid=$apiKey${WeatherPanel.queryUnits(this@MainActivity)}"
         
         val request = Request.Builder().url(url).build()
         try {
@@ -1494,6 +1497,7 @@ class MainActivity : RobotActivity(), RobotLifecycleCallbacks {
 
         val intent = Intent(this, ImmersiveModeActivity::class.java)
         for ((key, value) in activityData) intent.putExtra(key, value)
+        wasListeningBeforeSpeaking = wasListeningBeforeOpenAI || isListening
         startActivityForResult(intent, REQUEST_IMMERSIVE)
         val modeLabel = when (mode) {
             "story" -> "Story Mode"
@@ -1844,27 +1848,13 @@ class MainActivity : RobotActivity(), RobotLifecycleCallbacks {
             speakAndWait("Stopping the music.")
             withContext(Dispatchers.Main) { startListening() }
         } else {
-            val url: String
-            val stationName: String
-            
-            if (lower.contains("pop")) {
-                url = "http://listen.181fm.com/181-power_128k.mp3" // This URL is already HTTP
-                stationName = "Top 40 Pop"
-            } else if (lower.contains("synthwave") || lower.contains("nightride")) {
-                // Use SomaFM Underground 80s (HTTP) for better compatibility than Nightride HTTPS
-                url = "http://ice1.somafm.com/u80s-128-mp3"
-                stationName = "Synthwave (SomaFM)"
-            } else {
-                // Default: SomaFM
-                url = "http://ice1.somafm.com/u80s-128-mp3"
-                stationName = "Synthwave (SomaFM)"
-            }
+            val station = RadioStations.resolve(lower)
 
             // Launch Fullscreen Radio Activity
             runOnUiThread {
                 val intent = Intent(this@MainActivity, RadioActivity::class.java).apply {
-                    putExtra("EXTRA_STATION_NAME", stationName)
-                    putExtra("EXTRA_URL", url)
+                    putExtra("EXTRA_STATION_NAME", station.name)
+                    putExtra("EXTRA_URL", station.url)
                 }
                 startActivity(intent)
 
@@ -1890,6 +1880,7 @@ class MainActivity : RobotActivity(), RobotLifecycleCallbacks {
         imageView.setOnClickListener { dialog.dismiss() }
         
         dialog.show()
+        AppThemeViews.photo(dialog)
     }
 
     private fun relaunchActivity(msg: ChatMessage) {
@@ -1907,6 +1898,7 @@ class MainActivity : RobotActivity(), RobotLifecycleCallbacks {
             intent.putExtra(key, value)
         }
         
+        intent.putExtra("EXTRA_THEME", currentTheme)
         wasListeningBeforeSpeaking = isListening
         stopListening()
         hideSpinner()

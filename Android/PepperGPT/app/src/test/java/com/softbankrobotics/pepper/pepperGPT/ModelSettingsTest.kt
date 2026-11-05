@@ -26,12 +26,14 @@ class ModelSettingsTest {
             .put("messages", JSONArray().put(JSONObject().put("role", "user").put("content", content)))
     }
 
-    @Test fun defaultsPreserveExistingRequests() {
-        for (model in listOf("gpt-5-nano", "gpt-5-mini")) {
+    @Test fun legacyRequestsUseLunaWithCompatibleReasoning() {
+        for ((model, effort) in listOf("gpt-5-nano" to "none", "gpt-5-mini" to "low")) {
             val body = body(model)
-            val original = body.toString()
+            val messages = body.getJSONArray("messages").toString()
             ModelSettings.apply(context(), body)
-            assertEquals(original, body.toString())
+            assertEquals("gpt-5.6-luna", body.getString("model"))
+            assertEquals(effort, body.getString("reasoning_effort"))
+            assertEquals(messages, body.getJSONArray("messages").toString())
         }
     }
 
@@ -56,10 +58,11 @@ class ModelSettingsTest {
             .getJSONArray("content").getJSONObject(0).getString("type"))
     }
 
-    @Test fun emptySettingsUseOriginalDefaults() {
-        assertEquals("gpt-5-nano", ModelSettings.model(context(mapOf("chat_model" to "  ")), 0))
-        assertEquals("gpt-5-mini", ModelSettings.model(context(), 1))
-        assertEquals("gpt-5-mini", ModelSettings.model(context(), 2))
+    @Test fun emptyAndRetiringSettingsUseLuna() {
+        assertEquals("gpt-5.6-luna", ModelSettings.model(context(mapOf("chat_model" to "  ")), 0))
+        assertEquals("gpt-5.6-luna", ModelSettings.model(context(), 1))
+        assertEquals("gpt-5.6-luna", ModelSettings.model(context(), 2))
+        assertEquals("gpt-5.6-luna", ModelSettings.model(context(mapOf("creative_model" to "gpt-5-mini-2025-08-07")), 1))
     }
 
     @Test fun unrelatedModelsAreUntouched() {

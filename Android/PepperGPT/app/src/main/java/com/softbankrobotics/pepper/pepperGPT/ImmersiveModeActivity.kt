@@ -17,6 +17,7 @@ import com.aldebaran.qi.sdk.QiSDK
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks
 import com.aldebaran.qi.sdk.builder.SayBuilder
 import com.aldebaran.qi.sdk.design.activity.RobotActivity
+import com.aldebaran.qi.sdk.design.activity.conversationstatus.SpeechBarDisplayStrategy
 import com.squareup.picasso.Picasso
 import java.io.File
 import kotlinx.coroutines.Dispatchers
@@ -182,20 +183,8 @@ class ImmersiveModeActivity : RobotActivity(), RobotLifecycleCallbacks {
     }
 
     private fun applyTheme(theme: String) {
-        when (theme) {
-            "glass" -> {
-                findViewById<View>(R.id.immersive_root).setBackgroundResource(R.color.glass_bg)
-                textView.setTextColor(androidx.core.content.ContextCompat.getColor(this, R.color.glass_text))
-            }
-            "dark" -> {
-                findViewById<View>(R.id.immersive_root).setBackgroundResource(R.color.dark_bg)
-                textView.setTextColor(androidx.core.content.ContextCompat.getColor(this, R.color.dark_text))
-            }
-            "soft" -> {
-                findViewById<View>(R.id.immersive_root).setBackgroundResource(R.color.soft_bg)
-                textView.setTextColor(androidx.core.content.ContextCompat.getColor(this, R.color.soft_text))
-            }
-        }
+        setSpeechBarDisplayStrategy(SpeechBarDisplayStrategy.OVERLAY)
+        AppThemeViews.immersive(this, theme)
     }
 
     private fun resolveImageFile(imagePath: String, imageUrl: String): File? {
@@ -368,7 +357,10 @@ class ImmersiveModeActivity : RobotActivity(), RobotLifecycleCallbacks {
         speechStarted = true
 
         val plainText = intent.getStringExtra("EXTRA_CONTENT") ?: ""
-        if (plainText.isEmpty()) return
+        if (plainText.isEmpty()) {
+            SpecialScreen.closeAfterSpeech(this)
+            return
+        }
 
         scheduleAutoClose(estimatedSpeechMs(plainText))
 
@@ -388,6 +380,7 @@ class ImmersiveModeActivity : RobotActivity(), RobotLifecycleCallbacks {
             finally {
                 speechRunning = false
                 if (!userScrollActive) finishGentleScrolling()
+                SpecialScreen.closeAfterSpeech(this@ImmersiveModeActivity)
             }
         }
     }
@@ -418,6 +411,7 @@ class ImmersiveModeActivity : RobotActivity(), RobotLifecycleCallbacks {
             } finally {
                 speechRunning = false
                 if (!userScrollActive) finishGentleScrolling()
+                SpecialScreen.closeAfterSpeech(this@ImmersiveModeActivity)
             }
         }
     }
@@ -558,6 +552,7 @@ class ImmersiveModeActivity : RobotActivity(), RobotLifecycleCallbacks {
     }
 
     override fun onDestroy() {
+        SpecialScreen.cancel(this)
         speechController.close()
         storySpeechJob?.cancel()
         stopGentleScrolling()

@@ -2,8 +2,9 @@ package com.softbankrobotics.pepper.pepperGPT;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.StateListDrawable;
+import android.graphics.drawable.RippleDrawable;
 import android.media.AudioManager;
 import android.view.Gravity;
 import android.view.View;
@@ -50,32 +51,31 @@ public final class VoiceVolume {
                     Math.round(audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC) * value / 100f), 0);
         }
     }
-    private static GradientDrawable background(float density, int color) {
-        GradientDrawable shape = new GradientDrawable(); shape.setColor(color); shape.setCornerRadius(6 * density);
-        return shape;
-    }
     private static Button button(Context context, String label, String description, int color, float density) {
         Button button = new Button(context); button.setText(label); button.setTextSize(20); button.setTextColor(color);
         button.setAllCaps(false); button.setMinWidth(0); button.setMinimumWidth(0); button.setMinHeight(0); button.setMinimumHeight(0);
         button.setPadding(0, 0, 0, 0); button.setStateListAnimator(null); button.setElevation(0);
         button.setContentDescription(description);
-        StateListDrawable states = new StateListDrawable();
-        states.addState(new int[]{android.R.attr.state_pressed}, background(density, 0x55ffffff));
-        states.addState(new int[]{}, background(density, 0x22ffffff)); button.setBackground(states);
+        GradientDrawable touchMask = new GradientDrawable();
+        touchMask.setColor(0xffffffff);
+        touchMask.setCornerRadius(16 * density);
+        button.setBackground(new RippleDrawable(ColorStateList.valueOf(0x447f9db1), null, touchMask));
         return button;
     }
     public static void attach(LinearLayout titleRow, int textColor) {
         Context context = titleRow.getContext(); float density = context.getResources().getDisplayMetrics().density;
         LinearLayout controls = new LinearLayout(context); controls.setGravity(Gravity.CENTER_VERTICAL);
-        controls.setPadding(Math.round(8 * density), 0, 0, 0);
-        TextView value = new TextView(context); value.setTextSize(14); value.setTextColor(textColor); value.setGravity(Gravity.CENTER);
+        controls.setTag("pepper-voice-volume");
+        int edge = Math.round(4 * density);
+        controls.setPadding(edge, 0, edge, 0);
+        TextView value = new TextView(context); value.setTextSize(15); value.setTextColor(textColor); value.setGravity(Gravity.CENTER);
         Runnable refresh = () -> { int percent = percent(context); value.setText(percent + "%"); value.setContentDescription("Voice volume: " + percent + " percent"); };
         refresh.run();
         Button down = button(context, "−", "Decrease voice volume", textColor, density);
         Button up = button(context, "+", "Increase voice volume", textColor, density);
         down.setOnClickListener(ignored -> { change(context, -1); refresh.run(); });
         up.setOnClickListener(ignored -> { change(context, 1); refresh.run(); });
-        int side = Math.round(32 * density);
+        int side = Math.round(34 * density);
         controls.addView(down, new LinearLayout.LayoutParams(side, side));
         controls.addView(value, new LinearLayout.LayoutParams(Math.round(44 * density), LinearLayout.LayoutParams.WRAP_CONTENT));
         controls.addView(up, new LinearLayout.LayoutParams(side, side));
@@ -87,6 +87,9 @@ public final class VoiceVolume {
             public void onViewAttachedToWindow(View view) { prefs.registerOnSharedPreferenceChangeListener(listener); refresh.run(); }
             public void onViewDetachedFromWindow(View view) { prefs.unregisterOnSharedPreferenceChangeListener(listener); }
         });
-        titleRow.addView(controls);
+        LinearLayout.LayoutParams group = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, Math.round(36 * density));
+        group.setMarginStart(Math.round(10 * density));
+        titleRow.addView(controls, group);
     }
 }

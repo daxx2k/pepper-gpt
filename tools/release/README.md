@@ -2,6 +2,14 @@
 
 The downloadable restored integration is a sanitized packaging of the restored 2.7.x integration. It is separate from the Gradle development baseline in `Android/PepperGPT`; building that baseline does not reproduce this APK. A complete source-only reproduction of the restored integration is not yet available.
 
+## Public 2.8.1 integration
+
+Work on an isolated copy of the tested integration. Remove credential defaults from `MainActivity`, `ImageGenerationHelper` and `BuildConfig`. Retain runtime SSH configuration and strict host-key verification. Disable Android backup and debugging in the binary manifest and set `BuildConfig` to release.
+
+Use the public asset mappings in `ContextGesture.java`. Include the license and attribution bundled with `pepper_core_anims` and exclude `pepper_private_gestures`. Align and sign the APK with the existing integration certificate. Audit the decompressed archive for credentials, host keys, personal identifiers, private paths and backups. Publish the signed APK and a SHA-256 checksum.
+
+## Legacy 2.7.1 and 2.7.2 betas
+
 `ReleaseSettings.java` supplies optional SSH configuration from runtime preferences. SSH remains disabled until host, user, password and a verified `known_hosts` entry are supplied. Connections require `StrictHostKeyChecking=yes`. Restart the app after changing SSH settings. Native speech, gestures and awareness use QiSDK.
 
 `sanitize-integration.py` takes the path to an already prepared decoded restored integration. It deliberately checks the expected class layout and stops if that baseline differs. It removes legacy OpenAI/OpenWeather defaults from application classes and BuildConfig, removes embedded robot login defaults, adds the runtime settings hook, and disables Android backup and debugging in the existing binary manifest. It changes the manifest version to 2.7.1 / code 90.

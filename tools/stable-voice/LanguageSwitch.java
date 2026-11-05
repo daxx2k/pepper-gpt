@@ -98,7 +98,7 @@ public final class LanguageSwitch {
                 Drawable flag = new Flag(italian()); flag.setBounds(0, 0, Math.round(25*density), Math.round(17*density));
                 choice.setCompoundDrawables(flag, null, null, null);
                 choice.setContentDescription("Conversation language: " + (italian() ? "Italian" : "English"));
-                choice.setOnClickListener(ignored -> new AlertDialog.Builder(activity).setTitle("Conversation language")
+                choice.setOnClickListener(ignored -> AppThemeViews.show(new AlertDialog.Builder(activity).setTitle("Conversation language")
                         .setSingleChoiceItems(new String[]{"English", "Italiano"}, italian() ? 1 : 0, (dialog, index) -> {
                             String next = index == 1 ? "it" : "en";
                             dialog.dismiss();
@@ -107,7 +107,7 @@ public final class LanguageSwitch {
                             LegacyVoiceAdapter.beforeLanguageChange(activity);
                             activity.getSharedPreferences("PepperGPT_Prefs", 0).edit().putString("app_language", next).apply();
                             activity.recreate();
-                        }).setNegativeButton("Cancel", null).show());
+                        }).setNegativeButton("Cancel", null)));
                 row.addView(title); row.addView(choice);
                 VoiceVolume.attach(row, title.getCurrentTextColor());
                 toolbar.getClass().getMethod("setTitle", CharSequence.class).invoke(toolbar, "");

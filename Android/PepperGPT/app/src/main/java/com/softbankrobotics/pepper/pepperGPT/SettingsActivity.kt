@@ -132,6 +132,7 @@ class SettingsActivity : AppCompatActivity() {
             intent.putExtra(FullscreenEditorActivity.EXTRA_INITIAL, binding.editPersona.text.toString())
             startActivityForResult(intent, REQ_EDIT_PERSONA)
         }
+        AppThemeViews.form(this)
     }
 
     private fun loadPersonas() {

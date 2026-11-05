@@ -34,5 +34,6 @@ class FullscreenEditorActivity : AppCompatActivity() {
             setResult(Activity.RESULT_OK, data)
             finish()
         }
+        AppThemeViews.form(this)
     }
 }

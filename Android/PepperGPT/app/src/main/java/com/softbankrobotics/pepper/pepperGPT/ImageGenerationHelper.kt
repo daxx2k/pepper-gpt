@@ -15,13 +15,13 @@ import kotlinx.coroutines.withContext
 
 object ImageGenerationHelper {
     private const val TAG = "ImageGeneration"
-    const val STORY_MODEL = "gpt-image-1"
+    const val STORY_MODEL = "gpt-image-2.5-flare"
     const val STORY_QUALITY = "medium"
     /** Fast first scene so the story can start while later scenes render. */
-    const val FIRST_SCENE_MODEL = "gpt-image-1-mini"
+    const val FIRST_SCENE_MODEL = "gpt-image-2.5-flare"
     const val FIRST_SCENE_QUALITY = "low"
     const val CHAT_QUALITY = "low"
-    private val fallbackModels = listOf(STORY_MODEL, "gpt-image-1-mini")
+    private val fallbackModels = listOf(STORY_MODEL, "gpt-image-2.5-sunburst")
 
     private val httpClient: OkHttpClient by lazy {
         OkHttpClient.Builder()

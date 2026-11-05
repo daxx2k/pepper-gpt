@@ -38,25 +38,15 @@ For example, you can say:
 
 These capabilities describe the restored robot integration. The source release contains separate development and integration baselines, explained below.
 
-## Project status
+## Download PepperGPT 2.8.1
 
-An installable **2.7.2 beta APK** is available in [GitHub Releases](https://github.com/daxx2k/pepper-gpt/releases/tag/v2.7.2-beta.1). Download `PepperGPT-2.7.2-beta.1-armv7.apk` for Pepper 2.9 with the Android tablet (Android 6.0, ARMv7).
+[Download the signed APK](https://github.com/daxx2k/pepper-gpt/releases/download/v2.8.1/PepperGPT-2.8.1-armv7.apk) for **Pepper 2.9 Android** (Android 6.0 / API 23, ARMv7). The [release page](https://github.com/daxx2k/pepper-gpt/releases/tag/v2.8.1) includes the SHA-256 checksum.
 
-The APK contains the restored integration described above, including OpenAI voices and the ENG/ITA selector. **It contains no embedded API keys or robot login credentials.** Open Settings after installing and enter your own OpenAI key and, if needed, OpenWeather key. Optional SSH helpers require your own credentials and a verified `known_hosts` entry. These settings are saved privately on the tablet; they are not uploaded to this repository.
+Tap **Start Listening** for hands-free Realtime conversation in English or Italian. Pepper detects when you finish speaking and shows when she is listening, thinking and replying. The audio queue handles bursts of audio fragments during longer replies. The interface folds into a status icon after ten seconds without touch, and a tap brings the controls back.
 
-In the app menu, select **Realtime voice (experiment)** to try a separate push-to-talk conversation. Hold the talk button while speaking, then release to hear Pepper's reply. It uses your configured OpenAI API key and the selected English or Italian conversation language. Choose **Close** to return to classic mode and its activities.
+The APK includes illustrated stories, recipes, weather, radio, on-demand vision and local memory. In Settings, enter your own API keys. Optional SSH helpers require your own robot settings and a verified host key. The download contains no embedded credentials, private settings or chat history.
 
-This APK is a **prerelease**. Realtime was exercised on Pepper's Android 6 tablet using the equivalent development build; its first audio was queued about one second after releasing the talk button in three observed turns. The downloadable build includes the same Realtime code and passes archive privacy, signature and Android compatibility checks. See the release notes for validation scope.
-
-| Location | What it contains |
-| --- | --- |
-| `Android/PepperGPT` | The cleaned 2.8.x development app, including native Pepper speech, model settings and semantic radio recognition. |
-| `tools/stable-voice` and `tools/patch-*.py` | Integration helpers for the separate restored 2.7.x app, including streamed OpenAI voices, ENG/ITA support, touch interruption and speech gestures. |
-| `tools/release` | Runtime SSH settings and the credential-removal patch used for the downloadable restored integration. |
-
-**Building the Gradle development app does not yet reproduce the complete restored integration.** Its OpenAI voice and language-switch helpers are not wired into that build. Integration helpers share `ModelSettings.java` and `RadioIntent.java` from the development source. Older private APKs are excluded because they may embed credentials. The downloadable beta was separately sanitized and audited; it is not a build of the Gradle development baseline. See [the integration packaging notes](tools/release/README.md).
-
-The slow offline Cori engine has been removed. Native Pepper speech and OpenAI Coral/Marin remain available in the restored integration.
+The downloadable APK uses the restored integration. The Gradle project in `Android/PepperGPT` is a separate development baseline. The integration helpers are in `tools/stable-voice` and `tools/patch-*.py`. See the [packaging notes](tools/release/README.md) for details and the limits of source-only reproduction.
 
 ## Requirements and configuration
 
@@ -69,7 +59,7 @@ In Settings, provide:
 - A default city and your preferred personality.
 - Optional robot SSH settings with a verified SSH host key, where required by the existing robot helpers.
 
-In **Settings > AI models**, you can specify separate model IDs for conversation, stories/recipes and image analysis. The defaults remain `gpt-5-nano`, `gpt-5-mini` and `gpt-5-mini`. Blank fields use those defaults; Restore defaults fills them for review before Save. Speech and generated-image models are separate.
+In **Settings > AI models**, you can specify separate model IDs for the text conversation path, stories/recipes and image analysis. The defaults remain `gpt-5-nano`, `gpt-5-mini` and `gpt-5-mini`. Blank fields use those defaults; Restore defaults fills them for review before Save. Speech and generated-image models are separate.
 
 Custom models must support the API features used by their module, including Chat Completions, image input for vision, and function calling for semantic radio recognition. Account access, usage costs and future API compatibility depend on the selected models. A new API contract may require a code update.
 

@@ -77,25 +77,26 @@ class RadioActivity : AppCompatActivity(), RobotLifecycleCallbacks {
         stationNameText.text = stationName
         
         // Start playing visualizer immediately? No, wait for status.
-        visualizerView.setPlaying(true) 
+        visualizerView.setColor(RadioStations.visualizerColor(this))
+        visualizerView.setPlaying(true)
         
         radioManager.setListener(object : RadioManager.RadioListener {
             override fun onStatusChange(status: String, isError: Boolean) {
                 runOnUiThread {
-                    statusText.text = status
+                    RadioStations.showStatus(statusText, status)
                     if (isError) {
                         visualizerView.setColor(android.graphics.Color.RED)
                         visualizerView.setPlaying(false)
                         stopDancing()
                         RobotManager.getInstance(this@RadioActivity).stopRadioLedAnimation()
                     } else if (status.contains("Playing")) {
-                        visualizerView.setColor(android.graphics.Color.GREEN)
+                        visualizerView.setColor(RadioStations.visualizerColor(this@RadioActivity))
                         visualizerView.setPlaying(true)
                         RobotManager.getInstance(this@RadioActivity).startRadioLedAnimation()
                         if (danceEnabled) startDancing()
                     } else {
                         // Buffering
-                        visualizerView.setColor(android.graphics.Color.YELLOW)
+                        visualizerView.setColor(RadioStations.visualizerColor(this@RadioActivity))
                         visualizerView.setPlaying(true)
                         stopDancing()
                     }
@@ -130,25 +131,10 @@ class RadioActivity : AppCompatActivity(), RobotLifecycleCallbacks {
         }
         
         // --- Station Controls ---
-        findViewById<Button>(R.id.btnSynth).setOnClickListener {
-            changeStation("Synthwave (SomaFM)", "http://ice1.somafm.com/u80s-128-mp3", "#9C27B0")
+        RadioStations.install(this) { station ->
+            changeStation(station.name, station.url)
         }
-        findViewById<Button>(R.id.btnPop).setOnClickListener {
-            changeStation("Top 40 Pop", "http://listen.181fm.com/181-power_128k.mp3", "#E91E63")
-        }
-        findViewById<Button>(R.id.btnLofi).setOnClickListener {
-            changeStation("Chill / Lofi", "http://ice1.somafm.com/groovesalad-128-mp3", "#00BCD4")
-        }
-        findViewById<Button>(R.id.btnRetro).setOnClickListener {
-            changeStation("80s Classics", "http://listen.181fm.com/181-80scountry_128k.mp3", "#FF9800")
-        }
-        findViewById<Button>(R.id.btnAmbient).setOnClickListener {
-            changeStation("Chill / Ambient", "http://ice1.somafm.com/dronezone-128-mp3", "#4CAF50")
-        }
-        findViewById<Button>(R.id.btnJazz).setOnClickListener {
-            changeStation("Jazz Now", "http://listen.181fm.com/181-jazz_128k.mp3", "#795548")
-        }
-        
+
         stopButton.setOnClickListener {
             stopRadio()
             finish() // Return to chat
@@ -163,7 +149,7 @@ class RadioActivity : AppCompatActivity(), RobotLifecycleCallbacks {
             danceEnabled = !danceEnabled
             prefs.edit().putBoolean("dance_enabled", danceEnabled).apply()
             updateDanceButton(danceBtn)
-            if (danceEnabled && statusText.text.toString().contains("Playing")) {
+            if (danceEnabled && radioManager.isPlaying()) {
                 startDancing()
             } else {
                 stopDancing()
@@ -172,13 +158,7 @@ class RadioActivity : AppCompatActivity(), RobotLifecycleCallbacks {
     }
     
     private fun updateDanceButton(btn: Button) {
-        if (danceEnabled) {
-            btn.text = "🕺 Dance: ON"
-            btn.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#9C27B0"))
-        } else {
-            btn.text = "🕺 Dance: OFF"
-            btn.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#666666"))
-        }
+        AppThemeViews.dance(btn, danceEnabled)
     }
     
     private fun applyVolume(am: android.media.AudioManager) {
@@ -201,10 +181,10 @@ class RadioActivity : AppCompatActivity(), RobotLifecycleCallbacks {
         tv.text = "${currentUiLevel * 10}%"
     }
 
-    private fun changeStation(name: String, url: String, colorHex: String) {
+    private fun changeStation(name: String, url: String) {
         stationNameText.text = name
         statusText.text = "Changing Station..."
-        visualizerView.setColor(android.graphics.Color.parseColor(colorHex))
+        visualizerView.setColor(RadioStations.visualizerColor(this))
         radioManager.play(url)
     }
 
@@ -267,49 +247,7 @@ class RadioActivity : AppCompatActivity(), RobotLifecycleCallbacks {
     }
 
     private fun applyTheme() {
-        val prefs = getSharedPreferences("PepperGPT_Prefs", android.content.Context.MODE_PRIVATE)
-        val theme = prefs.getString("ui_theme", "glass") ?: "glass"
-        
-        val scrollRoot = findViewById<View>(R.id.radioScrollRoot)
-        val stationText = findViewById<TextView>(R.id.stationName)
-        val statusTxt = findViewById<TextView>(R.id.statusText)
-        val volTxt = findViewById<TextView>(R.id.volLevel)
-        val stopBtn = findViewById<Button>(R.id.stopButton)
-        val volDown = findViewById<Button>(R.id.volDown)
-        val volUp = findViewById<Button>(R.id.volUp)
-        
-        val bgColor: Int
-        val textColor: Int
-        val volBtnColor: Int
-        
-        when (theme) {
-            "dark" -> {
-                bgColor = androidx.core.content.ContextCompat.getColor(this, R.color.dark_bg)
-                textColor = androidx.core.content.ContextCompat.getColor(this, R.color.dark_text)
-                volBtnColor = android.graphics.Color.parseColor("#333333")
-            }
-            "soft" -> {
-                bgColor = androidx.core.content.ContextCompat.getColor(this, R.color.soft_bg)
-                textColor = androidx.core.content.ContextCompat.getColor(this, R.color.soft_text)
-                volBtnColor = android.graphics.Color.parseColor("#D8DEE9")
-            }
-            else -> { // glass
-                bgColor = androidx.core.content.ContextCompat.getColor(this, R.color.glass_bg)
-                textColor = androidx.core.content.ContextCompat.getColor(this, R.color.glass_text)
-                volBtnColor = android.graphics.Color.parseColor("#555555")
-            }
-        }
-        
-        scrollRoot.setBackgroundColor(bgColor)
-        stationText.setTextColor(textColor)
-        statusTxt.setTextColor(textColor)
-        volTxt.setTextColor(textColor)
-        volDown.backgroundTintList = android.content.res.ColorStateList.valueOf(volBtnColor)
-        volUp.backgroundTintList = android.content.res.ColorStateList.valueOf(volBtnColor)
-        volDown.setTextColor(textColor)
-        volUp.setTextColor(textColor)
-        stopBtn.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#FF4444"))
-        stopBtn.setTextColor(android.graphics.Color.WHITE)
+        AppThemeViews.radio(this)
     }
 
     private fun hideSystemUI() {

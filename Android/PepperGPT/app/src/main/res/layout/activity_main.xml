@@ -10,9 +10,9 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:background="@android:color/darker_gray"
+        android:background="@android:color/transparent"
         app:title="PepperGPT"
-        app:titleTextColor="@android:color/white"
+        app:titleTextColor="#193245"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
     <!-- Status row -->
