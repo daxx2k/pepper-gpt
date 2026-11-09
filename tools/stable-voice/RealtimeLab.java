@@ -13,6 +13,7 @@ import android.util.Base64;
 import android.util.Log;
 import com.aldebaran.qi.Future;
 import com.aldebaran.qi.sdk.QiContext;
+import com.aldebaran.qi.sdk.builder.SayBuilder;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
@@ -562,7 +563,16 @@ public final class RealtimeLab {
             }
             @Override public void onFailure(WebSocket ws, Throwable failure, Response response) {
                 int code = response == null ? 0 : response.code();
-                UI.post(() -> fail(code == 0 ? "Realtime connection failed." : "Realtime connection refused ("+code+")."));
+                JSONObject error = null;
+                if (response != null && code == 429) {
+                    try { error = new JSONObject(response.peekBody(8192).string()).optJSONObject("error"); }
+                    catch (java.io.IOException | org.json.JSONException ignored) { }
+                }
+                String billing = RealtimeBilling.notice(error, italian);
+                UI.post(() -> {
+                    if (billing != null) failBilling(billing);
+                    else fail(code == 0 ? "Realtime connection failed." : "Realtime connection refused ("+code+").");
+                });
             }
             @Override public void onClosed(WebSocket ws, int code, String reason) {
                 UI.post(() -> fail("Realtime connection closed."));
@@ -665,7 +675,8 @@ public final class RealtimeLab {
                     }
                     break;
                 case "conversation.item.input_audio_transcription.failed":
-                    if (awaitingCommit && inputItem.equals(j.optString("item_id"))) resetTurn();
+                    if (awaitingCommit && inputItem.equals(j.optString("item_id"))
+                            && !handleBilling(j.optJSONObject("error"))) resetTurn();
                     break;
                 case "input_audio_buffer.cleared":
                     if (clearing) {
@@ -698,8 +709,10 @@ public final class RealtimeLab {
                     }
                     break;
                 case "response.done":
+                    JSONObject response = j.getJSONObject("response");
+                    JSONObject details = response.optJSONObject("status_details");
+                    if (details != null && handleBilling(details.optJSONObject("error"))) break;
                     if (replying) {
-                        JSONObject response = j.getJSONObject("response");
                         if (readGestureDirection(response)) break;
                         UI.removeCallbacks(timeout);
                         if (!"completed".equals(response.optString("status"))) {
@@ -721,10 +734,11 @@ public final class RealtimeLab {
                     }
                     break;
                 case "error":
-                    String code = j.optJSONObject("error") == null ? "" : j.optJSONObject("error").optString("code");
+                    JSONObject error = j.optJSONObject("error");
+                    if (handleBilling(error)) break;
+                    String code = error == null ? "" : error.optString("code");
                     if (!code.matches("[a-zA-Z0-9_]{1,50}")) code = "request_failed";
                     Log.w(TAG, "Service error: "+code);
-                    JSONObject error = j.optJSONObject("error");
                     if (error != null && error.optString("event_id").matches("pepper_gesture_[0-9]+")) break;
                     if (!pendingCameraItem.isEmpty() && error != null
                             && pendingCameraItem.equals(error.optString("event_id"))) {
@@ -1066,6 +1080,28 @@ public final class RealtimeLab {
         if (!send(obj("type","input_audio_buffer.clear"))) fail("Could not resume listening.");
         else UI.postDelayed(timeout, 5000);
     }
+    private boolean handleBilling(JSONObject error) {
+        String message = RealtimeBilling.notice(error, italian);
+        if (message == null) return false;
+        failBilling(message);
+        return true;
+    }
+
+    private void failBilling(String message) {
+        if (closed) return;
+        fail(message);
+        QiContext qi = LegacyVoiceAdapter.focusedContext(activity);
+        if (qi == null) return;
+        SayBuilder.with(qi).withLocale(LanguageSwitch.locale()).withText(message).buildAsync().thenConsume(result ->
+            UI.post(() -> {
+                if (result.hasError() || result.isCancelled() || active != null
+                        || LegacyVoiceAdapter.focusedContext(activity) != qi) return;
+                // A directly built Say has no OpenAI speech metadata and uses the native voice.
+                try { LegacyVoiceAdapter.runAsync(result.get().async()); }
+                catch (Exception failure) { Log.w(TAG, "Native billing announcement unavailable"); }
+            }));
+    }
+
     private void fail(String message) {
         if (closed) return;
         invoke(activity,"stopListening");
