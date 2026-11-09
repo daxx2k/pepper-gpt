@@ -115,7 +115,11 @@ public final class RealtimeLab {
     public static void interrupt(Activity a) {
         a.runOnUiThread(() -> {
             RealtimeLab lab = active;
-            if (lab == null || lab.activity != a || !lab.replying) return;
+            if (lab == null || lab.activity != a) return;
+            if (!lab.replying) {
+                lab.stopGreeting();
+                return;
+            }
             lab.shutdown(); active = null;
             UI.postDelayed(() -> {
                 if (active == null && focused == a && listening(a)) start(a);
@@ -529,7 +533,7 @@ public final class RealtimeLab {
     private String userText = "", inputItem = "";
     private Future<Void> body;
     private int gestureOffset;
-    private boolean greeted, contextualCuePlayed, photoRendered;
+    private boolean greetingPlaying, contextualCuePlayed, photoRendered;
     private String directedCue = "";
     private SpinnerMotion responseMotion;
     private boolean idleRight;
@@ -624,6 +628,7 @@ public final class RealtimeLab {
                 case "input_audio_buffer.speech_started":
                     if (recording) {
                         stopListeningIdle();
+                        stopGreeting();
                         draftItem=j.optString("item_id");
                         phase("Ti sento…","I hear you…");
                     }
@@ -954,7 +959,12 @@ public final class RealtimeLab {
         if (!startedAudio || gesturePreparing || body != null || closed || !replying
                 || focused != activity || context == null) return;
 
-        if (!contextualCuePlayed && photoRendered && playCue("show_tablet_01")) return;
+        if (!contextualCuePlayed) {
+            boolean greeting = ConversationCue.greeting(userText)
+                    || ("hello".equals(directedCue) && ConversationCue.greeting(transcript));
+            if (greeting && playCue("hello_wave")) return;
+            if (photoRendered && playCue("show_tablet_01")) return;
+        }
         if (gestureOffset >= transcript.length()) return;
 
         // Start with a complete phrase if possible. Continue with the next words as the
@@ -985,7 +995,7 @@ public final class RealtimeLab {
         if (!contextualCuePlayed && cameraPreview == null) {
             String cue = ContextGesture.enumeration(text, transcript, "enumeration".equals(directedCue))
                     ? "enumeration_01"
-                    : ConversationCue.select(text, userText, directedCue, opening, greeted,
+                    : ConversationCue.select(text, userText, directedCue, opening,
                             transcriptComplete && end == transcript.length());
             if (!cue.isEmpty() && playCue(cue)) return;
         }
@@ -1021,11 +1031,14 @@ public final class RealtimeLab {
     }
 
     private boolean playCue(String cue) {
+        boolean greeting = "hello_wave".equals(cue);
         gaze.pause();
         if (!ContextGesture.play(activity, context, cue, () -> {
             gesturePreparing = false;
+            if (greeting) greetingPlaying = false;
             gaze.resume();
             if (replying && !closed) RobotLights.show(this, "speaking");
+            if (greeting && recording) scheduleListeningIdle();
             maybeGesture();
         })) {
             gaze.resume();
@@ -1033,8 +1046,8 @@ public final class RealtimeLab {
         }
         gesturePreparing = true;
         contextualCuePlayed = true;
-        if ("hello_05".equals(cue)) {
-            greeted = true;
+        if (greeting) {
+            greetingPlaying = true;
             RobotLights.show(this, "greeting");
         } else if ("enumeration_01".equals(cue)) {
             RobotLights.show(this, "enumeration");
@@ -1054,7 +1067,15 @@ public final class RealtimeLab {
         responseMotion = null;
     }
 
-    private void stopBody() {
+    private void stopGreeting() {
+        if (!greetingPlaying) return;
+        ContextGesture.stop(activity);
+        greetingPlaying = false;
+        gesturePreparing = false;
+        gaze.resume();
+    }
+
+    private void stopBody(boolean finishGreeting) {
         stopResponseMotion();
         stopListeningIdle();
         gesturePreparing = false;
@@ -1063,7 +1084,10 @@ public final class RealtimeLab {
         contextualCuePlayed = false;
         directedCue = "";
         photoRendered = false;
-        ContextGesture.stop(activity);
+        if (!finishGreeting || !greetingPlaying) {
+            ContextGesture.stop(activity);
+            greetingPlaying = false;
+        }
         RobotLights.clear(this);
         if (body != null) { body.requestCancellation(); body = null; }
     }
@@ -1074,8 +1098,8 @@ public final class RealtimeLab {
         replying = false; awaitingCommit = false; startedAudio = false;
         cameraAttempted = false; playbackStarted = false; cameraCallId = "";
         clearDrafts();
-        userText = ""; inputItem = ""; transcript.setLength(0); cameraPreview = null; pendingCameraItem = ""; pendingCameraPreview = null; memoryReply = false; stopBody();
-        gaze.resume();
+        userText = ""; inputItem = ""; transcript.setLength(0); cameraPreview = null; pendingCameraItem = ""; pendingCameraPreview = null; memoryReply = false; stopBody(true);
+        if (!greetingPlaying) gaze.resume();
         clearing = true;
         if (!send(obj("type","input_audio_buffer.clear"))) fail("Could not resume listening.");
         else UI.postDelayed(timeout, 5000);
@@ -1116,7 +1140,7 @@ public final class RealtimeLab {
         MainControlBar.reset(activity);
         if (phaseButton != null && android.text.TextUtils.equals(phaseButton.getText(), statusButtonText))
             phaseButton.setText(originalButtonText);
-        UI.removeCallbacks(timeout); queue.clear(); stopBody();
+        UI.removeCallbacks(timeout); queue.clear(); stopBody(false);
         WebSocket ws = socket; if (ws != null) ws.cancel();
     }
 }

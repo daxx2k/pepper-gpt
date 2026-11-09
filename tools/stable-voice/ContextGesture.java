@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 /** Runs one authored cue while its screen owns robot focus. */
 final class ContextGesture {
     private static final Handler UI = new Handler(Looper.getMainLooper());
+    private static final GestureVariants VARIANTS = new GestureVariants();
     private static final WeakHashMap<Activity, ContextGesture> ACTIVE = new WeakHashMap<>();
     private static final String MARKER = "(?iu)(?:^|[.!?;,:\\n]\\s*)\\s*";
     private static final Pattern FIRST = Pattern.compile(MARKER
@@ -35,8 +36,11 @@ final class ContextGesture {
     static boolean play(Activity activity, QiContext qi, String name, Runnable done) {
         if (qi == null || activity.isFinishing() || activity.isDestroyed()
                 || !activity.hasWindowFocus() || ACTIVE.containsKey(activity)) return false;
-        int id = activity.getResources().getIdentifier(name, "raw", activity.getPackageName());
-        String asset = id == 0 ? assetPath(name) : null;
+        String clip = VARIANTS.current(name);
+        boolean libraryClip = clip.indexOf('/') >= 0;
+        int id = libraryClip ? 0 : activity.getResources().getIdentifier(clip, "raw", activity.getPackageName());
+        String asset = libraryClip ? clip : id == 0 ? assetPath(clip) : null;
+        String label = libraryClip ? clip.substring(clip.lastIndexOf('/') + 1) : clip;
         if (id == 0 && asset == null) return false;
         ContextGesture cue = new ContextGesture(name);
         ACTIVE.put(activity, cue);
@@ -49,18 +53,19 @@ final class ContextGesture {
                 .thenConsume(ready -> UI.post(() -> {
                     if (cue.cancelled) return;
                     if (ready.hasError() || ready.isCancelled() || !activity.hasWindowFocus()) {
-                        cue.finish(activity, name, false, done);
+                        cue.finish(activity, label, false, done);
                         return;
                     }
                     try {
                         cue.action = ready.get().async().run();
-                        Log.i("PepperCue", "Requested " + name);
+                        VARIANTS.advance(name);
+                        Log.i("PepperCue", "Requested " + label);
                         cue.action.thenConsume(result -> UI.post(() -> {
-                            if (cue.cancelled && result.isCancelled()) Log.i("PepperCue", "Cancelled " + name);
-                            cue.finish(activity, name, !result.hasError() && !result.isCancelled(), done);
+                            if (cue.cancelled && result.isCancelled()) Log.i("PepperCue", "Cancelled " + label);
+                            cue.finish(activity, label, !result.hasError() && !result.isCancelled(), done);
                         }));
                     } catch (Exception error) {
-                        cue.finish(activity, name, false, done);
+                        cue.finish(activity, label, false, done);
                     }
                 }));
             return true;
@@ -82,8 +87,6 @@ final class ContextGesture {
             case "illustration_wait": return "pepper_core_anims/10-Loading/PoseRight_03.qianim";
             case "listen_ack": return "pepper_idle/listening_idle_right.qianim";
             case "uncertain": return "pepper_core_anims/10-Loading/PoseRight_03.qianim";
-            case "show_left_hand": return "pepper_core_anims/02-Body_Parts/Show_Hand_Left_02.qianim";
-            case "show_right_hand": return "pepper_core_anims/02-Body_Parts/Show_Hand_Right_02.qianim";
             default: return null;
         }
     }

@@ -77,10 +77,11 @@ final class ConversationCue {
         return "";
     }
 
-    static String select(String phrase, String request, String direction, boolean opening, boolean greeted, boolean lastPhrase) {
-        if (opening && !greeted && GREETING.matcher(phrase).find()
-                && (GREETING.matcher(request).find() || "hello".equals(direction)))
-            return "hello_05";
+    static boolean greeting(CharSequence text) {
+        return GREETING.matcher(text).find();
+    }
+
+    static String select(String phrase, String request, String direction, boolean opening, boolean lastPhrase) {
         if (!NEGATED.matcher(request).find() && (ACHIEVEMENT.matcher(request).find()
                 || "congratulations".equals(direction))
                 && (SUCCESS.matcher(phrase).find() || POSITIVE.matcher(phrase).find()))
